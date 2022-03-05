@@ -1,0 +1,354 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.35.0.0
+Copyright (C) 2021 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Mohammed Al-Jawaheri, Carnegiemellon University, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.35.0.2
+Toolchain Path:  C:\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.16
+Assembler:       Armasm.exe V6.16
+Linker/Locator:  ArmLink.exe V6.16
+Library Manager: ArmAr.exe V6.16
+Hex Converter:   FromElf.exe V6.16
+CPU DLL:         SARMCM3.DLL V5.35.0.2
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      lmidk-agdi.dll V???
+Dialog DLL:      TCM.DLL V1.53.0.0
+ 
+<h2>Project:</h2>
+C:\Users\M_alj\OneDrive\Desktop\Classes\Year 3\Spring 2021\RTOS\context_switching\ctxtswitch.uvprojx
+Project File Date:  03/05/2022
+
+<h2>Output:</h2>
+*** Using Compiler 'V6.16', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
+Rebuild target 'Target 1'
+assembling startup_TM4C123.s...
+main.c(4): warning: In file included from...
+./timer.h(14): warning: this function declaration is not a prototype [-Wstrict-prototypes]
+void SystickInit();
+                ^
+                 void
+main.c(5): warning: In file included from...
+./serial.h(11): warning: this function declaration is not a prototype [-Wstrict-prototypes]
+void SetupSerial();
+                ^
+                 void
+main.c(15): warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    SYSCTL_RCC_R = (SYSCTL_RCC_R & ~0x000007C0) + 0x00000540;
+                                 ~ ^~~~~~~~~~~
+main.c(16): warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    SYSCTL_RCC2_R &= ~0x00000070;
+                  ~~ ^~~~~~~~~~~
+main.c(17): warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    SYSCTL_RCC2_R &= ~0x00002000;
+                  ~~ ^~~~~~~~~~~
+main.c(19): warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    SYSCTL_RCC2_R = (SYSCTL_RCC2_R & ~0x1FC00000) + (4 << 22);
+                                   ~ ^~~~~~~~~~~
+main.c(20): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+    while ((SYSCTL_RIS_R &0x00000040)==0){};
+                                           ^
+main.c(21): warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    SYSCTL_RCC2_R &= ~0x00000800;
+                  ~~ ^~~~~~~~~~~
+main.c(11): warning: no previous prototype for function 'PLLInit' [-Wmissing-prototypes]
+void PLLInit()
+     ^
+main.c(11): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void PLLInit()
+^
+static 
+main.c(11): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
+void PLLInit()
+            ^
+main.c(24): warning: no previous prototype for function 'portBSetup' [-Wmissing-prototypes]
+void portBSetup() {
+     ^
+main.c(24): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void portBSetup() {
+^
+static 
+main.c(24): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
+void portBSetup() {
+               ^
+main.c(37): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
+void OS_SystickHandler(void) {
+     ^
+main.c(7): note: expanded from macro 'OS_SystickHandler'
+#define OS_SystickHandler SysTick_Handler
+                          ^
+main.c(37): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void OS_SystickHandler(void) {
+^
+static 
+13 warnings generated.
+compiling main.c...
+timer.c(16): warning: no previous prototype for function 'SystickInit' [-Wmissing-prototypes]
+void SystickInit()
+     ^
+timer.c(16): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SystickInit()
+^
+static 
+timer.c(16): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
+void SystickInit()
+                ^
+timer.c(26): warning: no previous prototype for function 'SysTick_Wait' [-Wmissing-prototypes]
+void SysTick_Wait(uint32_t delay)
+     ^
+timer.c(26): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SysTick_Wait(uint32_t delay)
+^
+static 
+timer.c(35): warning: no previous prototype for function 'SysTick_Wait10ms' [-Wmissing-prototypes]
+void SysTick_Wait10ms(uint32_t delay)
+     ^
+timer.c(35): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SysTick_Wait10ms(uint32_t delay)
+^
+static 
+timer.c(42): warning: no previous prototype for function 'SysTick_Wait1ms' [-Wmissing-prototypes]
+ void SysTick_Wait1ms(uint32_t delay)
+      ^
+timer.c(42): note: declare 'static' if the function is not intended to be used outside of this translation unit
+ void SysTick_Wait1ms(uint32_t delay)
+ ^
+ static 
+timer.c(50): warning: no previous prototype for function 'SysTick_Wait100microsec' [-Wmissing-prototypes]
+ void SysTick_Wait100microsec(uint32_t delay)
+      ^
+timer.c(50): note: declare 'static' if the function is not intended to be used outside of this translation unit
+ void SysTick_Wait100microsec(uint32_t delay)
+ ^
+ static 
+timer.c(57): warning: no previous prototype for function 'SysTick_Wait10microsec' [-Wmissing-prototypes]
+ void SysTick_Wait10microsec(uint32_t delay)
+      ^
+timer.c(57): note: declare 'static' if the function is not intended to be used outside of this translation unit
+ void SysTick_Wait10microsec(uint32_t delay)
+ ^
+ static 
+timer.c(64): warning: no previous prototype for function 'SysTick_Wait1microsec' [-Wmissing-prototypes]
+void SysTick_Wait1microsec(uint32_t delay)
+     ^
+timer.c(64): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SysTick_Wait1microsec(uint32_t delay)
+^
+static 
+8 warnings generated.
+compiling timer.c...
+RTE/Device/TM4C1236H6PM/system_TM4C123.c(13): warning: In file included from...
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123\TM4C123.h(64): warning: In file included from...
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(287): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(327): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(346): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(573): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(589): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(634): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(639): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(732): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(745): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(752): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(757): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(764): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(770): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(777): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(784): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(789): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(796): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(802): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(809): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(816): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(821): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(828): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(834): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(841): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(848): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(853): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(860): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(866): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(873): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(880): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(885): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(892): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(898): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(905): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(912): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(917): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(924): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(930): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(937): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(944): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(949): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(956): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(962): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(1085): warning: anonymous unions are a C11 extension [-Wc11-extensions]
+  union {
+  ^
+44 warnings generated.
+compiling system_TM4C123.c...
+serial.c(23): warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    UART0_CTL_R &= ~UART_CTL_UARTEN;
+                ~~ ^~~~~~~~~~~~~~~~
+serial.c(12): warning: no previous prototype for function 'SetupSerial' [-Wmissing-prototypes]
+void SetupSerial()
+     ^
+serial.c(12): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SetupSerial()
+^
+static 
+serial.c(12): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
+void SetupSerial()
+                ^
+serial.c(32): warning: no previous prototype for function 'SerialWrite' [-Wmissing-prototypes]
+void SerialWrite(char * st)
+     ^
+serial.c(32): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SerialWrite(char * st)
+^
+static 
+serial.c(45): warning: no previous prototype for function 'SerialWriteLine' [-Wmissing-prototypes]
+void SerialWriteLine(char * st)
+     ^
+serial.c(45): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SerialWriteLine(char * st)
+^
+static 
+serial.c(65): warning: implicit conversion changes signedness: 'int' to 'char' [-Wsign-conversion]
+        str[i] = '0'+n%10;
+               ~ ~~~^~~~~
+serial.c(58): warning: no previous prototype for function 'SerialWriteInt' [-Wmissing-prototypes]
+void SerialWriteInt(int n)
+     ^
+serial.c(58): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SerialWriteInt(int n)
+^
+static 
+7 warnings generated.
+compiling serial.c...
+linking...
+Program Size: Code=1096 RO-data=636 RW-data=0 ZI-data=608  
+".\Objects\ctxtswitch.axf" - 0 Error(s), 72 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.8.0.pack
+                ARM.CMSIS.5.8.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.5.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.TM4C_DFP.1.1.0.pack
+                Keil.TM4C_DFP.1.1.0
+                Texas Instruments Tiva C Series Device Support and Examples
+   * Component: Startup Version: 1.0.1
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_Target_1
+  C:\Users\M_alj\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include
+  C:\Users\M_alj\AppData\Local\Arm\Packs\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.5.0
+
+   * Component: Keil::Device:Startup:1.0.1
+      Include file:  Device\Include\TM4C123\TM4C123.h
+      Source file:   Device\Source\ARM\startup_TM4C123.s
+      Source file:   Device\Source\system_TM4C123.c
+Build Time Elapsed:  00:00:02
+</pre>
+</body>
+</html>
