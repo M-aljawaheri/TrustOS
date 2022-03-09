@@ -1,9 +1,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "staticMalloc.h"
 
 struct list {
-    char *data;
+    void *data;
     struct list *next;
 };
 
@@ -14,7 +15,7 @@ typedef list_node* list_t;
  * all linear lists have a dummy node with NULL data and NULL next at the tail
  */
 list_t create_list() {
-    list_t res = malloc(sizeof(list_node));
+    list_t res = MALLOC(sizeof(list_node));
     if (!res) return NULL;
     res->data = NULL;
     res->next = NULL;
@@ -25,8 +26,8 @@ list_t create_list() {
  * all circular lists are initialized with the data
  * NOTE: single node circular lists point to themselves as next
  */
-list_t create_circular_list(char *data) {
-    list_t res = malloc(sizeof(list_node));
+list_t create_circular_list(void *data) {
+    list_t res = MALLOC(sizeof(list_node));
     if (!res) return NULL;
     res->data = data;
     res->next = res;
@@ -38,8 +39,8 @@ list_t create_circular_list(char *data) {
  * returns a pointer to the latest added node
  * Note: be careful when adding as next to an empty list
  */
-list_t add_as_next(list_t lst, char *data) {
-    list_t node =  malloc(sizeof(list_node));
+list_t add_as_next(list_t lst, void *data) {
+    list_t node =  MALLOC(sizeof(list_node));
     if (!node) return NULL;
     node->data = data;
     if (!lst->next) {
@@ -54,8 +55,8 @@ list_t add_as_next(list_t lst, char *data) {
 /*
  * adds to the front of list / current node of circular list
  */
-list_t add_to_front(list_t lst, char *data) {
-    list_t node =  malloc(sizeof(list_node));
+list_t add_to_front(list_t lst, void *data) {
+    list_t node =  MALLOC(sizeof(list_node));
     if (!node) return NULL;
     node->next = lst;
     node->data = data;
@@ -65,8 +66,8 @@ list_t add_to_front(list_t lst, char *data) {
 /*
  *  REQUIRES: list is not a circular list (has a tail)
  */
-list_t add_to_back(list_t lst, char *data) {
-    list_t node =  malloc(sizeof(list_node));
+list_t add_to_back(list_t lst, void *data) {
+    list_t node =  MALLOC(sizeof(list_node));
     if (!node) return NULL;
     list_t current_node = lst;
     if (!current_node->next) {
