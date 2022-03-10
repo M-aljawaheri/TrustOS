@@ -13,7 +13,8 @@
 #define configCPU_CLOCK_HZ (80000000)	// 80 Mhz clock frequency
 #define configTICK_RATE_HZ (1000)       // 1000 hz tick rate
 #define INITIAL_XPSR					( 0x01000000 )
-#define INITIAL_EXC_RETURN				( 0xfffffffd )
+#define INITIAL_EXC_RETURN				( 0xfffffff9 )
+// or d?
 #define MAX_SYSCALL_INTERRUPT_PRIORITY (1)
 
 #define DISABLE_INTERRUPTS()     \
@@ -36,9 +37,9 @@
  **/
 
 struct taskControlBlock {
+	uint32_t* pxStack;			// base SP for this thread
 	uint32_t* pxTopOfStack;		// current SP for this thread, TODO: should be volatile?
 	list_t xListEntry;		// link back to the list item this TCB is in. This list item should include what list it's in
-	uint32_t* pxStack;			// base SP for this thread
 	uint32_t uxPriority;		// current priority of this thread
 	uint32_t uxThreadId;		// ID for this thread
 };
@@ -48,6 +49,8 @@ char sparemem[1024];
 TCB_t* tmpThread1 = NULL;
 TCB_t* tmpThread2 = NULL;
 TCB_t* pxCurrentTCB = NULL;
+bool schedulerStarted = false;
+uint32_t pendcounter = 0;
 
 void PLLInit()
 {
@@ -74,6 +77,20 @@ void portBSetup() {
 	GPIO_PORTB_DEN_R = 0xFF;        // Enable digital ports	
 }
 
+/**
+ * This sets the basepri register to have the priority
+ * setting, usually called with either 0 (all exceptions are unmasked)
+ * or 1, all exceptions are masked. 
+ * https://www.ti.com/lit/ds/spms376e/spms376e.pdf?ts=1646645911650&ref_url=https%253A%252F%252Fwww.ti.com%252Ftool%252FEK-TM4C123GXL
+ * consult page 87 of the TI datasheet above for options.
+ *
+ */
+static inline void __set_BASEPRI(uint32_t priority) {
+	priority = (priority << 5);
+	__asm("MSR basepri, %[priority]\t\n" :: [priority] "r" (priority));
+}
+
+
 void OS_SetupTimerInterrupt(void) {
 	SerialWrite("Setting up systick timer..\n");
 	// Disable until configuration is done
@@ -86,6 +103,7 @@ void OS_SetupTimerInterrupt(void) {
 
 void thread1() {
 	while (1) {
+		ENABLE_INTERRUPTS();
 		GPIO_PORTB_DATA_R = 0x1;
 		GPIO_PORTB_DATA_R &= (~0x1UL);
 	}
@@ -93,6 +111,7 @@ void thread1() {
 
 void thread2() {
 	while (1) {
+		ENABLE_INTERRUPTS();
 		GPIO_PORTB_DATA_R = 0x2;
 		GPIO_PORTB_DATA_R &= (~0x2UL);
 	}
@@ -115,6 +134,7 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 	// add it to the circular READY list	
 	if (tmpThread1 == NULL) tmpThread1 = newTCB;
 	else tmpThread2 = newTCB;
+	pxCurrentTCB = tmpThread1;
 						
 	// set up the initial state	
 	uint32_t pushed_registers_size = 8*WORD_SIZE;
@@ -136,8 +156,44 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 	
 	(newTCB->pxStack)--;
 	*((uint32_t*)newTCB->pxStack) = 11;	// R11
-	(newTCB->pxStack) -= 7;				// skipping registers R5,R6,R7,R8,R9,R10
+	//(newTCB->pxStack) -= 7;				// skipping registers R5,R6,R7,R8,R9,R10
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 10;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 9;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 8;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 7;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 6;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 5;
+	
+	(newTCB->pxStack)--;
 	*((uint32_t*)newTCB->pxStack) = 4;	// R4	
+}
+
+void OS_startScheduler(void) {
+	schedulerStarted = true;
+	// start popping off registers
+	__asm volatile
+	(
+	"   LDR R3, =pxCurrentTCB                \n"    // load address of current TCB
+	"	LDR R2, [R3]						  \n"
+	"	LDR R0, [R2]						  \n"
+	"	LDMIA R0!, {R4-R11, R14}			  \n"
+	"	MOV SP, R0							  \n"
+	"   ISB									  \n"
+	"										  \n"
+	"	bx R14								  \n"
+	);
 }
 
 // int memthread1[100];
@@ -155,28 +211,18 @@ int main(void)
 	PLLInit();
 	portBSetup();
     
+	
 	OS_SetupTimerInterrupt();
 	initMalloc(sparemem);
 	
 	// test OS
+	DISABLE_INTERRUPTS();
 	OS_spawnThread(&thread1, 0, 100, 1);
 	OS_spawnThread(&thread2, 1, 100, 1);
+	ENABLE_INTERRUPTS();
+	OS_startScheduler();
 	while (1) {}
 	//thread1();
-}
-
-
-/**
- * This sets the basepri register to have the priority
- * setting, usually called with either 0 (all exceptions are unmasked)
- * or 1, all exceptions are masked. 
- * https://www.ti.com/lit/ds/spms376e/spms376e.pdf?ts=1646645911650&ref_url=https%253A%252F%252Fwww.ti.com%252Ftool%252FEK-TM4C123GXL
- * consult page 87 of the TI datasheet above for options.
- *
- */
-static inline void __set_BASEPRI(uint32_t priority) {
-	priority &= 0xFF;
-	__asm("MSR basepri, %[priority]\t\n" :: [priority] "r" (priority));
 }
 
 
@@ -192,6 +238,7 @@ static inline void __set_BASEPRI(uint32_t priority) {
  */
 void OS_SystickHandler(void) {
 	SerialWrite("Systick timer hit\n");
+	if (tmpThread1 == NULL || tmpThread2 == NULL) return;
 	// TODO: do we really need to disable interrupts here
 	
 	DISABLE_INTERRUPTS();
@@ -202,11 +249,20 @@ void OS_SystickHandler(void) {
 	ENABLE_INTERRUPTS();
 }
 
+void OS_switchToNextTask(void) {
+	//pxCurrentTask = pxCurrentTask->xListEntry->next;
+	if (tmpThread1 == NULL || tmpThread2 == NULL) return;
+	if (pxCurrentTCB == tmpThread1) pxCurrentTCB = tmpThread2;
+	else if (pxCurrentTCB == tmpThread2) pxCurrentTCB = tmpThread1;
+}
+
 void OS_PendSVHandler(void) {
 	//SerialWrite("Pend SV timer hit\n");
+	if (!schedulerStarted) return;
+	pendcounter++;
 	__asm volatile 
 	(
-	"	MRS R0, PSP                           \n"	// load current SP for a future store
+	"	MOV R0, SP                           \n"	// load current SP for a future store
 	"   LDR R3, =pxCurrentTCB                \n"    // load address of current TCB
 	"	LDR R2, [R3]						 \n"	// R2 = currentTCB
 	"	STMDB R0!, {R4-R11, R14} 			 \n"	// push software-saved registers
@@ -223,7 +279,7 @@ void OS_PendSVHandler(void) {
 	"	LDR R2, [R3]						  \n"
 	"	LDR R0, [R2]						  \n"
 	"	LDMIA R0!, {R4-R11, R14}			  \n"
-	"	MSR PSP, R0							  \n"
+	"	MOV SP, R0							  \n"
 	"   ISB									  \n"
 	"										  \n"
 	"	bx R14								  \n"
