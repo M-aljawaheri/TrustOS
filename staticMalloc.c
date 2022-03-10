@@ -10,6 +10,7 @@ char *memPointer;
 void initMalloc(char *start) {
     mallocArray = start;
     memPointer = mallocArray;
+	while ((unsigned int)memPointer % ALIGNMENT_REQ != 0) memPointer++;
 }
 
 void *Malloc(int size) {
