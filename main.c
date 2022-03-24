@@ -13,8 +13,8 @@
 #define configCPU_CLOCK_HZ (80000000)	// 80 Mhz clock frequency
 #define configTICK_RATE_HZ (1000)       // 1000 hz tick rate
 #define INITIAL_XPSR					( 0x01000000 )
-#define INITIAL_EXC_RETURN				( 0xfffffff9 )
-// or d?
+#define INITIAL_EXC_RETURN				( 0xfffffffd )
+// or d? or 9
 #define MAX_SYSCALL_INTERRUPT_PRIORITY (1)
 
 #define DISABLE_INTERRUPTS()     \
@@ -128,8 +128,8 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 	TCB_t* newTCB = (TCB_t*)MALLOC(sizeof(TCB_t));
 	newTCB->uxPriority = priority;
 	newTCB->uxThreadId = tid;
-	newTCB->pxTopOfStack = &((uint32_t*)stack)[stack_size];
-	newTCB->pxStack = &((uint32_t*)stack)[stack_size];
+	newTCB->pxTopOfStack = stack;
+	newTCB->pxStack = &((uint8_t*)stack)[stack_size];
 						
 	// add it to the circular READY list	
 	if (tmpThread1 == NULL) tmpThread1 = newTCB;
@@ -138,8 +138,9 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 						
 	// set up the initial state	
 	uint32_t pushed_registers_size = 8*WORD_SIZE;
-	newTCB->pxStack = newTCB->pxStack - (pushed_registers_size);
-
+	uint8_t* temp = ((uint8_t*)(newTCB->pxStack)) - (pushed_registers_size);
+	newTCB->pxStack = temp;
+						
 	// write the pushed registers in reverse order
 	// The numbers are just for debugging, can be optimized out
 	*((uint32_t*)newTCB->pxStack) = 0;		// R0 = 0

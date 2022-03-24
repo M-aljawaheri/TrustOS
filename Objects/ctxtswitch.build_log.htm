@@ -27,7 +27,6 @@ Project File Date:  03/10/2022
 <h2>Output:</h2>
 *** Using Compiler 'V6.16', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Rebuild target 'Target 1'
-assembling startup_TM4C123.s...
 staticMalloc.c(2): warning: In file included from...
 ./staticMalloc.h(12): warning: no newline at end of file [-Wnewline-eof]
 #endif
@@ -49,33 +48,6 @@ char *memPointer;
 ^
 4 warnings generated.
 compiling staticMalloc.c...
-scheduler.c(4): warning: In file included from...
-./timer.h(14): warning: this function declaration is not a prototype [-Wstrict-prototypes]
-void SystickInit();
-                ^
-                 void
-scheduler.c(5): warning: In file included from...
-./serial.h(11): warning: this function declaration is not a prototype [-Wstrict-prototypes]
-void SetupSerial();
-                ^
-                 void
-scheduler.c(8): warning: In file included from...
-./lists.h(19): warning: this function declaration is not a prototype [-Wstrict-prototypes]
-list_t create_list();
-                  ^
-                   void
-./lists.h(56): warning: no newline at end of file [-Wnewline-eof]
-#endif
-      ^
-scheduler.c(9): warning: In file included from...
-./scheduler.h(6): warning: no newline at end of file [-Wnewline-eof]
-//void OS_switchToNextTask(void);
-                                 ^
-scheduler.c(20): warning: no newline at end of file [-Wnewline-eof]
-*/
-  ^
-6 warnings generated.
-compiling scheduler.c...
 timer.c(16): warning: no previous prototype for function 'SystickInit' [-Wmissing-prototypes]
 void SystickInit()
      ^
@@ -130,6 +102,33 @@ void SysTick_Wait1microsec(uint32_t delay)
 static 
 8 warnings generated.
 compiling timer.c...
+scheduler.c(4): warning: In file included from...
+./timer.h(14): warning: this function declaration is not a prototype [-Wstrict-prototypes]
+void SystickInit();
+                ^
+                 void
+scheduler.c(5): warning: In file included from...
+./serial.h(11): warning: this function declaration is not a prototype [-Wstrict-prototypes]
+void SetupSerial();
+                ^
+                 void
+scheduler.c(8): warning: In file included from...
+./lists.h(19): warning: this function declaration is not a prototype [-Wstrict-prototypes]
+list_t create_list();
+                  ^
+                   void
+./lists.h(56): warning: no newline at end of file [-Wnewline-eof]
+#endif
+      ^
+scheduler.c(9): warning: In file included from...
+./scheduler.h(6): warning: no newline at end of file [-Wnewline-eof]
+//void OS_switchToNextTask(void);
+                                 ^
+scheduler.c(20): warning: no newline at end of file [-Wnewline-eof]
+*/
+  ^
+6 warnings generated.
+compiling scheduler.c...
 serial.c(23): warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
     UART0_CTL_R &= ~UART_CTL_UARTEN;
                 ~~ ^~~~~~~~~~~~~~~~
@@ -305,6 +304,12 @@ main.c(127): warning: implicit conversion changes signedness: 'uint32_t' (aka 'u
 ./staticMalloc.h(4): note: expanded from macro 'MALLOC'
 #define MALLOC(size) Malloc(size)
                      ~~~~~~ ^~~~
+main.c(132): warning: incompatible pointer types assigning to 'uint32_t *' (aka 'unsigned int *') from 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
+        newTCB->pxStack = &((uint8_t*)stack)[stack_size];
+                        ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+main.c(142): warning: incompatible pointer types assigning to 'uint32_t *' (aka 'unsigned int *') from 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
+        newTCB->pxStack = temp;
+                        ^ ~~~~
 main.c(124): warning: no previous prototype for function 'OS_spawnThread' [-Wmissing-prototypes]
 void OS_spawnThread(void (*program)(void), uint32_t tid, 
      ^
@@ -312,46 +317,46 @@ main.c(124): note: declare 'static' if the function is not intended to be used o
 void OS_spawnThread(void (*program)(void), uint32_t tid, 
 ^
 static 
-main.c(183): warning: no previous prototype for function 'OS_startScheduler' [-Wmissing-prototypes]
+main.c(184): warning: no previous prototype for function 'OS_startScheduler' [-Wmissing-prototypes]
 void OS_startScheduler(void) {
      ^
-main.c(183): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(184): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_startScheduler(void) {
 ^
 static 
-main.c(219): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+main.c(220): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
         DISABLE_INTERRUPTS();
                             ^
-main.c(244): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+main.c(245): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
         DISABLE_INTERRUPTS();
                             ^
-main.c(239): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
+main.c(240): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
 void OS_SystickHandler(void) {
      ^
 main.c(11): note: expanded from macro 'OS_SystickHandler'
 #define OS_SystickHandler SysTick_Handler
                           ^
-main.c(239): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(240): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_SystickHandler(void) {
 ^
 static 
-main.c(252): warning: no previous prototype for function 'OS_switchToNextTask' [-Wmissing-prototypes]
+main.c(253): warning: no previous prototype for function 'OS_switchToNextTask' [-Wmissing-prototypes]
 void OS_switchToNextTask(void) {
      ^
-main.c(252): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(253): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_switchToNextTask(void) {
 ^
 static 
-main.c(272): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+main.c(273): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
         DISABLE_INTERRUPTS();
                             ^
-main.c(259): warning: no previous prototype for function 'PendSV_Handler' [-Wmissing-prototypes]
+main.c(260): warning: no previous prototype for function 'PendSV_Handler' [-Wmissing-prototypes]
 void OS_PendSVHandler(void) {
      ^
 main.c(12): note: expanded from macro 'OS_PendSVHandler'
 #define OS_PendSVHandler PendSV_Handler
                          ^
-main.c(259): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(260): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_PendSVHandler(void) {
 ^
 static 
@@ -361,8 +366,9 @@ char sparemem[1024];
 main.c(47): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 char sparemem[1024];
 ^
-38 warnings generated.
+40 warnings generated.
 compiling main.c...
+assembling startup_TM4C123.s...
 RTE/Device/TM4C1236H6PM/system_TM4C123.c(13): warning: In file included from...
 C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123\TM4C123.h(64): warning: In file included from...
 C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(287): warning: anonymous unions are a C11 extension [-Wc11-extensions]
@@ -500,8 +506,8 @@ C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C12
 44 warnings generated.
 compiling system_TM4C123.c...
 linking...
-Program Size: Code=2386 RO-data=698 RW-data=0 ZI-data=1664  
-".\Objects\ctxtswitch.axf" - 0 Error(s), 107 Warning(s).
+Program Size: Code=2382 RO-data=698 RW-data=0 ZI-data=1664  
+".\Objects\ctxtswitch.axf" - 0 Error(s), 109 Warning(s).
 
 <h2>Software Packages used:</h2>
 
