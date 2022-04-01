@@ -13,7 +13,9 @@
 #define configCPU_CLOCK_HZ (80000000)	// 80 Mhz clock frequency
 #define configTICK_RATE_HZ (1000)       // 1000 hz tick rate
 #define INITIAL_XPSR					( 0x01000000 )
-#define INITIAL_EXC_RETURN				( 0xfffffffd )
+#define INITIAL_EXC_RETURN				( 0xfffffff9 )
+//(0xFFFFFFB8)
+// (0xFFFFFFBC)
 // or d? or 9
 #define MAX_SYSCALL_INTERRUPT_PRIORITY (1)
 
