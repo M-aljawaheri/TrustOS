@@ -181,10 +181,17 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 	
 	(newTCB->pxStack)--;
 	*((uint32_t*)newTCB->pxStack) = 4;	// R4	
+	
+	
+	// NOTE: above could have been replaced by
+	// for i <= 13: *(--sp) = i;
 }
 
 void OS_startScheduler(void) {
 	schedulerStarted = true;
+	
+	/*
+	
 	// start popping off registers
 	__asm volatile
 	(
@@ -197,6 +204,8 @@ void OS_startScheduler(void) {
 	"										  \n"
 	"	bx R14								  \n"
 	);
+	
+	*/
 }
 
 // int memthread1[100];
@@ -225,7 +234,7 @@ int main(void)
 	ENABLE_INTERRUPTS();
 	OS_startScheduler();
 	while (1) {}
-	//thread1();
+	//thread2();
 }
 
 
@@ -240,16 +249,16 @@ int main(void)
  * when all interrupts are done executing
  */
 void OS_SystickHandler(void) {
-	SerialWrite("Systick timer hit\n");
-	if (tmpThread1 == NULL || tmpThread2 == NULL) return;
+	// SerialWrite("Systick timer hit\n");
+	// if (tmpThread1 == NULL || tmpThread2 == NULL) return;
 	// TODO: do we really need to disable interrupts here
 	
-	DISABLE_INTERRUPTS();
+	// DISABLE_INTERRUPTS();
 	
 	// PendSV will only run when all current 
 	NVIC_INT_CTRL_R = NVIC_INT_CTRL_PEND_SV;	// TODO: abstract away the regisiters for this step
 	
-	ENABLE_INTERRUPTS();
+	// ENABLE_INTERRUPTS();
 }
 
 void OS_switchToNextTask(void) {
@@ -262,16 +271,25 @@ void OS_switchToNextTask(void) {
 void OS_PendSVHandler(void) {
 	//SerialWrite("Pend SV timer hit\n");
 	if (!schedulerStarted) return;
-	pendcounter++;
-	__asm volatile 
-	(
-	"	MOV R0, SP                           \n"	// load current SP for a future store
-	"   LDR R3, =pxCurrentTCB                \n"    // load address of current TCB
-	"	LDR R2, [R3]						 \n"	// R2 = currentTCB
-	"	STMDB R0!, {R4-R11, R14} 			 \n"	// push software-saved registers
-	"   STR R0, [R2]						 \n" 	// save stack pointer in current TCB
-	);
 	
+	if (pendcounter == 0) {
+		__asm volatile
+		(
+			"   LDR R3, =pxCurrentTCB                \n"    // load address of current TCB
+		);
+	} else {
+		__asm volatile 
+		(
+		"	MOV R0, SP                           \n"	// load current SP for a future store
+		"   LDR R3, =pxCurrentTCB                \n"    // load address of current TCB
+		"	LDR R2, [R3]						 \n"	// R2 = currentTCB
+		"	STMDB R0!, {R4-R11, R14} 			 \n"	// push software-saved registers
+		"   STR R0, [R2]						 \n" 	// save stack pointer in current TCB
+		);
+	}
+	
+	
+	pendcounter = 1;
 	DISABLE_INTERRUPTS();
 	OS_switchToNextTask();
 	ENABLE_INTERRUPTS();
@@ -279,6 +297,7 @@ void OS_PendSVHandler(void) {
 	// start popping off registers
 	__asm volatile
 	(
+	"   LDR R3, =pxCurrentTCB                \n"    // load address of current TCB
 	"	LDR R2, [R3]						  \n"
 	"	LDR R0, [R2]						  \n"
 	"	LDMIA R0!, {R4-R11, R14}			  \n"

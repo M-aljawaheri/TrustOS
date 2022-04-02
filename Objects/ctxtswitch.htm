@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\ctxtswitch.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\ctxtswitch.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6160001: Last Updated: Thu Mar 24 10:36:10 2022
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6160001: Last Updated: Sat Apr  2 19:16:14 2022
 <BR><P>
 <H3>Maximum Stack Usage =         72 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1272,7 +1272,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[97]"></a>OS_startScheduler</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, main.o(.text.OS_startScheduler))
+<P><STRONG><a name="[97]"></a>OS_startScheduler</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, main.o(.text.OS_startScheduler))
 <BR><BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -1286,7 +1286,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[8]"></a>PendSV_Handler</STRONG> (Thumb, 90 bytes, Stack size 8 bytes, main.o(.text.PendSV_Handler))
+<P><STRONG><a name="[8]"></a>PendSV_Handler</STRONG> (Thumb, 108 bytes, Stack size 8 bytes, main.o(.text.PendSV_Handler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = PendSV_Handler &rArr; __set_BASEPRI
 </UL>
 <BR>[Calls]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_switchToNextTask
@@ -1298,7 +1298,6 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = SerialWrite
 </UL>
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Handler
 <LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SetupTimerInterrupt
 </UL>
 
@@ -1306,12 +1305,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[9]"></a>SysTick_Handler</STRONG> (Thumb, 82 bytes, Stack size 8 bytes, main.o(.text.SysTick_Handler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = SysTick_Handler &rArr; SerialWrite
-</UL>
-<BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_BASEPRI
-<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SerialWrite
-</UL>
+<P><STRONG><a name="[9]"></a>SysTick_Handler</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, main.o(.text.SysTick_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
 </UL>
 <P><STRONG><a name="[76]"></a>SystemInit</STRONG> (Thumb, 268 bytes, Stack size 4 bytes, system_tm4c123.o(.text.SystemInit))
@@ -1376,7 +1370,6 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;thread2
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;thread1
 <LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Handler
 <LI><a href="#[8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PendSV_Handler
 </UL>
 <P>

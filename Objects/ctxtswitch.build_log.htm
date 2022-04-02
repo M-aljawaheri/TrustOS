@@ -27,55 +27,6 @@ Project File Date:  03/10/2022
 <h2>Output:</h2>
 *** Using Compiler 'V6.16', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Rebuild target 'Target 1'
-scheduler.c(4): warning: In file included from...
-./timer.h(14): warning: this function declaration is not a prototype [-Wstrict-prototypes]
-void SystickInit();
-                ^
-                 void
-scheduler.c(5): warning: In file included from...
-./serial.h(11): warning: this function declaration is not a prototype [-Wstrict-prototypes]
-void SetupSerial();
-                ^
-                 void
-scheduler.c(8): warning: In file included from...
-./lists.h(19): warning: this function declaration is not a prototype [-Wstrict-prototypes]
-list_t create_list();
-                  ^
-                   void
-./lists.h(56): warning: no newline at end of file [-Wnewline-eof]
-#endif
-      ^
-scheduler.c(9): warning: In file included from...
-./scheduler.h(6): warning: no newline at end of file [-Wnewline-eof]
-//void OS_switchToNextTask(void);
-                                 ^
-scheduler.c(20): warning: no newline at end of file [-Wnewline-eof]
-*/
-  ^
-6 warnings generated.
-compiling scheduler.c...
-staticMalloc.c(2): warning: In file included from...
-./staticMalloc.h(12): warning: no newline at end of file [-Wnewline-eof]
-#endif
-      ^
-staticMalloc.c(21): warning: no newline at end of file [-Wnewline-eof]
-}
- ^
-staticMalloc.c(7): warning: no previous extern declaration for non-static variable 'mallocArray' [-Wmissing-variable-declarations]
-char *mallocArray;
-      ^
-staticMalloc.c(7): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-char *mallocArray;
-^
-staticMalloc.c(8): warning: no previous extern declaration for non-static variable 'memPointer' [-Wmissing-variable-declarations]
-char *memPointer;
-      ^
-staticMalloc.c(8): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-char *memPointer;
-^
-4 warnings generated.
-compiling staticMalloc.c...
-assembling startup_TM4C123.s...
 timer.c(16): warning: no previous prototype for function 'SystickInit' [-Wmissing-prototypes]
 void SystickInit()
      ^
@@ -130,6 +81,54 @@ void SysTick_Wait1microsec(uint32_t delay)
 static 
 8 warnings generated.
 compiling timer.c...
+scheduler.c(4): warning: In file included from...
+./timer.h(14): warning: this function declaration is not a prototype [-Wstrict-prototypes]
+void SystickInit();
+                ^
+                 void
+scheduler.c(5): warning: In file included from...
+./serial.h(11): warning: this function declaration is not a prototype [-Wstrict-prototypes]
+void SetupSerial();
+                ^
+                 void
+scheduler.c(8): warning: In file included from...
+./lists.h(19): warning: this function declaration is not a prototype [-Wstrict-prototypes]
+list_t create_list();
+                  ^
+                   void
+./lists.h(56): warning: no newline at end of file [-Wnewline-eof]
+#endif
+      ^
+scheduler.c(9): warning: In file included from...
+./scheduler.h(6): warning: no newline at end of file [-Wnewline-eof]
+//void OS_switchToNextTask(void);
+                                 ^
+scheduler.c(20): warning: no newline at end of file [-Wnewline-eof]
+*/
+  ^
+6 warnings generated.
+compiling scheduler.c...
+staticMalloc.c(2): warning: In file included from...
+./staticMalloc.h(12): warning: no newline at end of file [-Wnewline-eof]
+#endif
+      ^
+staticMalloc.c(21): warning: no newline at end of file [-Wnewline-eof]
+}
+ ^
+staticMalloc.c(7): warning: no previous extern declaration for non-static variable 'mallocArray' [-Wmissing-variable-declarations]
+char *mallocArray;
+      ^
+staticMalloc.c(7): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+char *mallocArray;
+^
+staticMalloc.c(8): warning: no previous extern declaration for non-static variable 'memPointer' [-Wmissing-variable-declarations]
+char *memPointer;
+      ^
+staticMalloc.c(8): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+char *memPointer;
+^
+4 warnings generated.
+compiling staticMalloc.c...
 serial.c(23): warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
     UART0_CTL_R &= ~UART_CTL_UARTEN;
                 ~~ ^~~~~~~~~~~~~~~~
@@ -305,6 +304,7 @@ C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C12
   ^
 44 warnings generated.
 compiling system_TM4C123.c...
+assembling startup_TM4C123.s...
 main.c(4): warning: In file included from...
 ./timer.h(14): warning: this function declaration is not a prototype [-Wstrict-prototypes]
 void SystickInit();
@@ -454,46 +454,43 @@ main.c(126): note: declare 'static' if the function is not intended to be used o
 void OS_spawnThread(void (*program)(void), uint32_t tid, 
 ^
 static 
-main.c(186): warning: no previous prototype for function 'OS_startScheduler' [-Wmissing-prototypes]
+main.c(190): warning: no previous prototype for function 'OS_startScheduler' [-Wmissing-prototypes]
 void OS_startScheduler(void) {
      ^
-main.c(186): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(190): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_startScheduler(void) {
 ^
 static 
-main.c(222): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+main.c(231): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
         DISABLE_INTERRUPTS();
                             ^
-main.c(247): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
-        DISABLE_INTERRUPTS();
-                            ^
-main.c(242): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
+main.c(251): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
 void OS_SystickHandler(void) {
      ^
 main.c(11): note: expanded from macro 'OS_SystickHandler'
 #define OS_SystickHandler SysTick_Handler
                           ^
-main.c(242): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(251): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_SystickHandler(void) {
 ^
 static 
-main.c(255): warning: no previous prototype for function 'OS_switchToNextTask' [-Wmissing-prototypes]
+main.c(264): warning: no previous prototype for function 'OS_switchToNextTask' [-Wmissing-prototypes]
 void OS_switchToNextTask(void) {
      ^
-main.c(255): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(264): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_switchToNextTask(void) {
 ^
 static 
-main.c(275): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+main.c(293): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
         DISABLE_INTERRUPTS();
                             ^
-main.c(262): warning: no previous prototype for function 'PendSV_Handler' [-Wmissing-prototypes]
+main.c(271): warning: no previous prototype for function 'PendSV_Handler' [-Wmissing-prototypes]
 void OS_PendSVHandler(void) {
      ^
 main.c(12): note: expanded from macro 'OS_PendSVHandler'
 #define OS_PendSVHandler PendSV_Handler
                          ^
-main.c(262): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(271): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_PendSVHandler(void) {
 ^
 static 
@@ -503,11 +500,11 @@ char sparemem[1024];
 main.c(49): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 char sparemem[1024];
 ^
-40 warnings generated.
+39 warnings generated.
 compiling main.c...
 linking...
-Program Size: Code=2382 RO-data=698 RW-data=0 ZI-data=1664  
-".\Objects\ctxtswitch.axf" - 0 Error(s), 109 Warning(s).
+Program Size: Code=2318 RO-data=682 RW-data=0 ZI-data=1664  
+".\Objects\ctxtswitch.axf" - 0 Error(s), 108 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -533,9 +530,9 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.5.0
 
    * Component: Keil::Device:Startup:1.0.1
+      Source file:   Device\Source\system_TM4C123.c
       Include file:  Device\Include\TM4C123\TM4C123.h
       Source file:   Device\Source\ARM\startup_TM4C123.s
-      Source file:   Device\Source\system_TM4C123.c
 Build Time Elapsed:  00:00:04
 </pre>
 </body>
