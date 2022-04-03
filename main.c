@@ -51,6 +51,11 @@ char sparemem[1024];
 TCB_t* tmpThread1 = NULL;
 TCB_t* tmpThread2 = NULL;
 TCB_t* pxCurrentTCB = NULL;
+TCB_t* pxNextTCB = NULL;
+
+uint32_t currentSP = 0;
+uint32_t nextSP = 0;
+
 bool schedulerStarted = false;
 uint32_t pendcounter = 0;
 
@@ -136,7 +141,7 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 	// add it to the circular READY list	
 	if (tmpThread1 == NULL) tmpThread1 = newTCB;
 	else tmpThread2 = newTCB;
-	pxCurrentTCB = tmpThread1;
+	pxNextTCB = tmpThread1;
 						
 	// set up the initial state	
 	uint32_t pushed_registers_size = 8*WORD_SIZE;
@@ -150,7 +155,7 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 	*((uint32_t*)newTCB->pxStack+2) = 2;	// R2 = 2
 	*((uint32_t*)newTCB->pxStack+3) = 3;	// R3 = 3
 	*((uint32_t*)newTCB->pxStack+4) = 12;	// R12 = 12
-	*((uint32_t*)newTCB->pxStack+5) = 0;	// LR = 0
+	*((uint32_t*)newTCB->pxStack+5) = INITIAL_EXC_RETURN;	// LR = 0
 	*((uint32_t*)newTCB->pxStack+6) = (uint32_t)program;
 	*((uint32_t*)newTCB->pxStack+7) = INITIAL_XPSR;		
 	// {R4-R11, R14}
@@ -189,28 +194,7 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 
 void OS_startScheduler(void) {
 	schedulerStarted = true;
-	
-	/*
-	
-	// start popping off registers
-	__asm volatile
-	(
-	"   LDR R3, =pxCurrentTCB                \n"    // load address of current TCB
-	"	LDR R2, [R3]						  \n"
-	"	LDR R0, [R2]						  \n"
-	"	LDMIA R0!, {R4-R11, R14}			  \n"
-	"	MOV SP, R0							  \n"
-	"   ISB									  \n"
-	"										  \n"
-	"	bx R14								  \n"
-	);
-	
-	*/
 }
-
-// int memthread1[100];
-// OS_addThread(memthread1);
-// OS_addThread(pointerToMem)
 
 /*
  * main.c
@@ -229,8 +213,8 @@ int main(void)
 	
 	// test OS
 	DISABLE_INTERRUPTS();
-	OS_spawnThread(&thread1, 0, 100, 1);
-	OS_spawnThread(&thread2, 1, 100, 1);
+	OS_spawnThread(&thread1, 0, 200, 1);
+	OS_spawnThread(&thread2, 1, 200, 1);
 	ENABLE_INTERRUPTS();
 	OS_startScheduler();
 	while (1) {}
@@ -264,48 +248,57 @@ void OS_SystickHandler(void) {
 void OS_switchToNextTask(void) {
 	//pxCurrentTask = pxCurrentTask->xListEntry->next;
 	if (tmpThread1 == NULL || tmpThread2 == NULL) return;
-	if (pxCurrentTCB == tmpThread1) pxCurrentTCB = tmpThread2;
-	else if (pxCurrentTCB == tmpThread2) pxCurrentTCB = tmpThread1;
+	if (pxCurrentTCB == tmpThread1) pxNextTCB = tmpThread2;
+	else if (pxCurrentTCB == tmpThread2) pxNextTCB = tmpThread1;
 }
 
 void OS_PendSVHandler(void) {
 	//SerialWrite("Pend SV timer hit\n");
+	__asm("POP {LR, R7}		\n");
 	if (!schedulerStarted) return;
+
+	__asm("CPSID I");
 	
-	if (pendcounter == 0) {
-		__asm volatile
-		(
-			"   LDR R3, =pxCurrentTCB                \n"    // load address of current TCB
-		);
-	} else {
-		__asm volatile 
-		(
-		"	MOV R0, SP                           \n"	// load current SP for a future store
-		"   LDR R3, =pxCurrentTCB                \n"    // load address of current TCB
-		"	LDR R2, [R3]						 \n"	// R2 = currentTCB
-		"	STMDB R0!, {R4-R11, R14} 			 \n"	// push software-saved registers
-		"   STR R0, [R2]						 \n" 	// save stack pointer in current TCB
-		);
+	if (pxCurrentTCB == NULL) {
+		pxCurrentTCB = pxNextTCB;
+		
+		nextSP = (uint32_t)(pxCurrentTCB->pxStack);
+		__asm volatile("LDR R0, =nextSP		\n");
+		__asm volatile("LDR SP, [R0]		\n");
+		__asm volatile("POP {R4-R11, R14}	\n");
+		__asm volatile("ISB					\n");
+		__asm volatile("CPSIE I				\n");
+		__asm volatile("bx R14				\n");
+		//return;
 	}
 	
-	
-	pendcounter = 1;
-	DISABLE_INTERRUPTS();
+	// save software-saved registers
+	__asm("PUSH {R4-R11, R14}");
 	OS_switchToNextTask();
-	ENABLE_INTERRUPTS();
 	
-	// start popping off registers
-	__asm volatile
-	(
-	"   LDR R3, =pxCurrentTCB                \n"    // load address of current TCB
-	"	LDR R2, [R3]						  \n"
-	"	LDR R0, [R2]						  \n"
-	"	LDMIA R0!, {R4-R11, R14}			  \n"
-	"	MOV SP, R0							  \n"
-	"   ISB									  \n"
-	"										  \n"
-	"	bx R14								  \n"
-	);
+	// save current SP in currentTCP SP
+	// TODO: can save a ton of unnecessary instructions here
+	currentSP = (uint32_t)&(pxCurrentTCB->pxStack);
+	__asm("LDR R0, =currentSP");
+	__asm("LDR R0, [R0]");
+	__asm("STR SP, [R0]");
+	
+	
+	// update SP to nextThread SP
+	nextSP = (uint32_t)(pxNextTCB->pxStack);
+	__asm("LDR R0, =nextSP");
+	__asm("LDR SP, [R0]");
+	
+	// pxCurrentTCB = pxNextTCB;
+	__asm("LDR R0, =pxNextTCB");
+	__asm("LDR R0, [R0]");
+	__asm("LDR R1, =pxCurrentTCB");
+	__asm("STR R0, [R1]");
+	
+	//pxCurrentTCB = pxNextTCB;
+	__asm("POP {R4-R11, R14}");
+	__asm("CPSIE I");
+	__asm("bx R14");
 }
 
 

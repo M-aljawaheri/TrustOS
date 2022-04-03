@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\ctxtswitch.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\ctxtswitch.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6160001: Last Updated: Sat Apr  2 19:16:14 2022
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6160001: Last Updated: Sun Apr  3 03:34:33 2022
 <BR><P>
 <H3>Maximum Stack Usage =         72 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1276,21 +1276,20 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[92]"></a>OS_switchToNextTask</STRONG> (Thumb, 130 bytes, Stack size 0 bytes, main.o(.text.OS_switchToNextTask))
+<P><STRONG><a name="[91]"></a>OS_switchToNextTask</STRONG> (Thumb, 130 bytes, Stack size 0 bytes, main.o(.text.OS_switchToNextTask))
 <BR><BR>[Called By]<UL><LI><a href="#[8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PendSV_Handler
 </UL>
 
-<P><STRONG><a name="[94]"></a>PLLInit</STRONG> (Thumb, 122 bytes, Stack size 4 bytes, main.o(.text.PLLInit))
+<P><STRONG><a name="[93]"></a>PLLInit</STRONG> (Thumb, 122 bytes, Stack size 4 bytes, main.o(.text.PLLInit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = PLLInit
 </UL>
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[8]"></a>PendSV_Handler</STRONG> (Thumb, 108 bytes, Stack size 8 bytes, main.o(.text.PendSV_Handler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = PendSV_Handler &rArr; __set_BASEPRI
+<P><STRONG><a name="[8]"></a>PendSV_Handler</STRONG> (Thumb, 178 bytes, Stack size 8 bytes, main.o(.text.PendSV_Handler))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = PendSV_Handler
 </UL>
-<BR>[Calls]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_switchToNextTask
-<LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_BASEPRI
+<BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_switchToNextTask
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
 </UL>
@@ -1301,7 +1300,7 @@ Global Symbols
 <LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SetupTimerInterrupt
 </UL>
 
-<P><STRONG><a name="[93]"></a>SetupSerial</STRONG> (Thumb, 158 bytes, Stack size 0 bytes, serial.o(.text.SetupSerial))
+<P><STRONG><a name="[92]"></a>SetupSerial</STRONG> (Thumb, 158 bytes, Stack size 0 bytes, serial.o(.text.SetupSerial))
 <BR><BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -1313,7 +1312,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(.text)
 </UL>
-<P><STRONG><a name="[96]"></a>initMalloc</STRONG> (Thumb, 66 bytes, Stack size 4 bytes, staticmalloc.o(.text.initMalloc))
+<P><STRONG><a name="[95]"></a>initMalloc</STRONG> (Thumb, 66 bytes, Stack size 4 bytes, staticmalloc.o(.text.initMalloc))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = initMalloc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1322,34 +1321,34 @@ Global Symbols
 <P><STRONG><a name="[85]"></a>main</STRONG> (Thumb, 118 bytes, Stack size 24 bytes, main.o(.text.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = main &rArr; OS_spawnThread &rArr; Malloc
 </UL>
-<BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;portBSetup
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initMalloc
-<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PLLInit
+<BR>[Calls]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;portBSetup
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initMalloc
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PLLInit
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_startScheduler
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_spawnThread
 <LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_SetupTimerInterrupt
-<LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_BASEPRI
-<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetupSerial
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_BASEPRI
+<LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetupSerial
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SerialWrite
 </UL>
 <BR>[Called By]<UL><LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[95]"></a>portBSetup</STRONG> (Thumb, 102 bytes, Stack size 0 bytes, main.o(.text.portBSetup))
+<P><STRONG><a name="[94]"></a>portBSetup</STRONG> (Thumb, 102 bytes, Stack size 0 bytes, main.o(.text.portBSetup))
 <BR><BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[78]"></a>thread1</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, main.o(.text.thread1))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = thread1 &rArr; __set_BASEPRI
 </UL>
-<BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_BASEPRI
+<BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_BASEPRI
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
 </UL>
 <P><STRONG><a name="[79]"></a>thread2</STRONG> (Thumb, 32 bytes, Stack size 8 bytes, main.o(.text.thread2))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = thread2 &rArr; __set_BASEPRI
 </UL>
-<BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_BASEPRI
+<BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_BASEPRI
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
 </UL>
@@ -1364,13 +1363,12 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[91]"></a>__set_BASEPRI</STRONG> (Thumb, 20 bytes, Stack size 4 bytes, main.o(.text.__set_BASEPRI))
+<P><STRONG><a name="[96]"></a>__set_BASEPRI</STRONG> (Thumb, 20 bytes, Stack size 4 bytes, main.o(.text.__set_BASEPRI))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = __set_BASEPRI
 </UL>
 <BR>[Called By]<UL><LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;thread2
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;thread1
 <LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PendSV_Handler
 </UL>
 <P>
 <H3>
