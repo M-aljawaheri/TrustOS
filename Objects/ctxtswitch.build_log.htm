@@ -22,11 +22,32 @@ Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
 C:\Users\M_alj\OneDrive\Desktop\Classes\Year 3\Spring 2021\RTOS\context_switching\ctxtswitch.uvprojx
-Project File Date:  04/03/2022
+Project File Date:  04/09/2022
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.16', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Rebuild target 'Target 1'
+staticMalloc.c(2): warning: In file included from...
+./staticMalloc.h(12): warning: no newline at end of file [-Wnewline-eof]
+#endif
+      ^
+staticMalloc.c(21): warning: no newline at end of file [-Wnewline-eof]
+}
+ ^
+staticMalloc.c(7): warning: no previous extern declaration for non-static variable 'mallocArray' [-Wmissing-variable-declarations]
+char *mallocArray;
+      ^
+staticMalloc.c(7): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+char *mallocArray;
+^
+staticMalloc.c(8): warning: no previous extern declaration for non-static variable 'memPointer' [-Wmissing-variable-declarations]
+char *memPointer;
+      ^
+staticMalloc.c(8): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+char *memPointer;
+^
+4 warnings generated.
+compiling staticMalloc.c...
 timer.c(16): warning: no previous prototype for function 'SystickInit' [-Wmissing-prototypes]
 void SystickInit()
      ^
@@ -81,6 +102,100 @@ void SysTick_Wait1microsec(uint32_t delay)
 static 
 8 warnings generated.
 compiling timer.c...
+assembling startup_TM4C123.s...
+serial.c(23): warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+    UART0_CTL_R &= ~UART_CTL_UARTEN;
+                ~~ ^~~~~~~~~~~~~~~~
+serial.c(12): warning: no previous prototype for function 'SetupSerial' [-Wmissing-prototypes]
+void SetupSerial()
+     ^
+serial.c(12): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SetupSerial()
+^
+static 
+serial.c(12): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
+void SetupSerial()
+                ^
+serial.c(32): warning: no previous prototype for function 'SerialWrite' [-Wmissing-prototypes]
+void SerialWrite(char * st)
+     ^
+serial.c(32): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SerialWrite(char * st)
+^
+static 
+serial.c(45): warning: no previous prototype for function 'SerialWriteLine' [-Wmissing-prototypes]
+void SerialWriteLine(char * st)
+     ^
+serial.c(45): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SerialWriteLine(char * st)
+^
+static 
+serial.c(65): warning: implicit conversion changes signedness: 'int' to 'char' [-Wsign-conversion]
+        str[i] = '0'+n%10;
+               ~ ~~~^~~~~
+serial.c(58): warning: no previous prototype for function 'SerialWriteInt' [-Wmissing-prototypes]
+void SerialWriteInt(int n)
+     ^
+serial.c(58): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void SerialWriteInt(int n)
+^
+static 
+7 warnings generated.
+compiling serial.c...
+lists.c(4): warning: In file included from...
+./staticMalloc.h(12): warning: no newline at end of file [-Wnewline-eof]
+#endif
+      ^
+lists.c(18): warning: no previous prototype for function 'create_list' [-Wmissing-prototypes]
+list_t create_list() {
+       ^
+lists.c(18): note: declare 'static' if the function is not intended to be used outside of this translation unit
+list_t create_list() {
+^
+static 
+lists.c(18): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
+list_t create_list() {
+                  ^
+lists.c(31): warning: no previous prototype for function 'create_circular_list' [-Wmissing-prototypes]
+list_t create_circular_list(void *data) {
+       ^
+lists.c(31): note: declare 'static' if the function is not intended to be used outside of this translation unit
+list_t create_circular_list(void *data) {
+^
+static 
+lists.c(45): warning: no previous prototype for function 'add_as_next' [-Wmissing-prototypes]
+list_t add_as_next(list_t lst, void *data) {
+       ^
+lists.c(45): note: declare 'static' if the function is not intended to be used outside of this translation unit
+list_t add_as_next(list_t lst, void *data) {
+^
+static 
+lists.c(67): warning: no previous prototype for function 'add_to_front' [-Wmissing-prototypes]
+list_t add_to_front(list_t lst, void *data) {
+       ^
+lists.c(67): note: declare 'static' if the function is not intended to be used outside of this translation unit
+list_t add_to_front(list_t lst, void *data) {
+^
+static 
+lists.c(80): warning: no previous prototype for function 'add_to_back' [-Wmissing-prototypes]
+list_t add_to_back(list_t lst, void *data) {
+       ^
+lists.c(80): note: declare 'static' if the function is not intended to be used outside of this translation unit
+list_t add_to_back(list_t lst, void *data) {
+^
+static 
+lists.c(127): warning: no newline at end of file [-Wnewline-eof]
+}
+ ^
+lists.c(109): warning: no previous prototype for function 'delete_node' [-Wmissing-prototypes]
+list_t delete_node(list_t node) {
+       ^
+lists.c(109): note: declare 'static' if the function is not intended to be used outside of this translation unit
+list_t delete_node(list_t node) {
+^
+static 
+9 warnings generated.
+compiling lists.c...
 scheduler.c(4): warning: In file included from...
 ./timer.h(14): warning: this function declaration is not a prototype [-Wstrict-prototypes]
 void SystickInit();
@@ -92,11 +207,11 @@ void SetupSerial();
                 ^
                  void
 scheduler.c(8): warning: In file included from...
-./lists.h(19): warning: this function declaration is not a prototype [-Wstrict-prototypes]
+./lists.h(20): warning: this function declaration is not a prototype [-Wstrict-prototypes]
 list_t create_list();
                   ^
                    void
-./lists.h(56): warning: no newline at end of file [-Wnewline-eof]
+./lists.h(57): warning: no newline at end of file [-Wnewline-eof]
 #endif
       ^
 scheduler.c(9): warning: In file included from...
@@ -108,27 +223,6 @@ scheduler.c(20): warning: no newline at end of file [-Wnewline-eof]
   ^
 6 warnings generated.
 compiling scheduler.c...
-staticMalloc.c(2): warning: In file included from...
-./staticMalloc.h(12): warning: no newline at end of file [-Wnewline-eof]
-#endif
-      ^
-staticMalloc.c(21): warning: no newline at end of file [-Wnewline-eof]
-}
- ^
-staticMalloc.c(7): warning: no previous extern declaration for non-static variable 'mallocArray' [-Wmissing-variable-declarations]
-char *mallocArray;
-      ^
-staticMalloc.c(7): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-char *mallocArray;
-^
-staticMalloc.c(8): warning: no previous extern declaration for non-static variable 'memPointer' [-Wmissing-variable-declarations]
-char *memPointer;
-      ^
-staticMalloc.c(8): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-char *memPointer;
-^
-4 warnings generated.
-compiling staticMalloc.c...
 RTE/Device/TM4C1236H6PM/system_TM4C123.c(13): warning: In file included from...
 C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123\TM4C123.h(64): warning: In file included from...
 C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123/TM4C1236H6PM.h(287): warning: anonymous unions are a C11 extension [-Wc11-extensions]
@@ -265,45 +359,6 @@ C:/Users/M_alj/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C12
   ^
 44 warnings generated.
 compiling system_TM4C123.c...
-serial.c(23): warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
-    UART0_CTL_R &= ~UART_CTL_UARTEN;
-                ~~ ^~~~~~~~~~~~~~~~
-serial.c(12): warning: no previous prototype for function 'SetupSerial' [-Wmissing-prototypes]
-void SetupSerial()
-     ^
-serial.c(12): note: declare 'static' if the function is not intended to be used outside of this translation unit
-void SetupSerial()
-^
-static 
-serial.c(12): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
-void SetupSerial()
-                ^
-serial.c(32): warning: no previous prototype for function 'SerialWrite' [-Wmissing-prototypes]
-void SerialWrite(char * st)
-     ^
-serial.c(32): note: declare 'static' if the function is not intended to be used outside of this translation unit
-void SerialWrite(char * st)
-^
-static 
-serial.c(45): warning: no previous prototype for function 'SerialWriteLine' [-Wmissing-prototypes]
-void SerialWriteLine(char * st)
-     ^
-serial.c(45): note: declare 'static' if the function is not intended to be used outside of this translation unit
-void SerialWriteLine(char * st)
-^
-static 
-serial.c(65): warning: implicit conversion changes signedness: 'int' to 'char' [-Wsign-conversion]
-        str[i] = '0'+n%10;
-               ~ ~~~^~~~~
-serial.c(58): warning: no previous prototype for function 'SerialWriteInt' [-Wmissing-prototypes]
-void SerialWriteInt(int n)
-     ^
-serial.c(58): note: declare 'static' if the function is not intended to be used outside of this translation unit
-void SerialWriteInt(int n)
-^
-static 
-7 warnings generated.
-compiling serial.c...
 main.c(4): warning: In file included from...
 ./timer.h(14): warning: this function declaration is not a prototype [-Wstrict-prototypes]
 void SystickInit();
@@ -319,39 +374,39 @@ main.c(7): warning: In file included from...
 //void OS_switchToNextTask(void);
                                  ^
 main.c(8): warning: In file included from...
-./lists.h(19): warning: this function declaration is not a prototype [-Wstrict-prototypes]
+./lists.h(20): warning: this function declaration is not a prototype [-Wstrict-prototypes]
 list_t create_list();
                   ^
                    void
-./lists.h(56): warning: no newline at end of file [-Wnewline-eof]
+./lists.h(57): warning: no newline at end of file [-Wnewline-eof]
 #endif
       ^
 main.c(9): warning: In file included from...
 ./staticMalloc.h(12): warning: no newline at end of file [-Wnewline-eof]
 #endif
       ^
-main.c(53): warning: no previous extern declaration for non-static variable 'tmpThread1' [-Wmissing-variable-declarations]
+main.c(52): warning: no previous extern declaration for non-static variable 'tmpThread1' [-Wmissing-variable-declarations]
 TCB_t* tmpThread1 = NULL;
+       ^
+main.c(52): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+TCB_t* tmpThread1 = NULL;
+^
+main.c(53): warning: no previous extern declaration for non-static variable 'tmpThread2' [-Wmissing-variable-declarations]
+TCB_t* tmpThread2 = NULL;
        ^
 main.c(53): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-TCB_t* tmpThread1 = NULL;
-^
-main.c(54): warning: no previous extern declaration for non-static variable 'tmpThread2' [-Wmissing-variable-declarations]
 TCB_t* tmpThread2 = NULL;
+^
+main.c(54): warning: no previous extern declaration for non-static variable 'pxCurrentTCB' [-Wmissing-variable-declarations]
+TCB_t* pxCurrentTCB = NULL;
        ^
 main.c(54): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-TCB_t* tmpThread2 = NULL;
-^
-main.c(55): warning: no previous extern declaration for non-static variable 'pxCurrentTCB' [-Wmissing-variable-declarations]
-TCB_t* pxCurrentTCB = NULL;
-       ^
-main.c(55): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 TCB_t* pxCurrentTCB = NULL;
 ^
-main.c(56): warning: no previous extern declaration for non-static variable 'pxNextTCB' [-Wmissing-variable-declarations]
+main.c(55): warning: no previous extern declaration for non-static variable 'pxNextTCB' [-Wmissing-variable-declarations]
 TCB_t* pxNextTCB = NULL;
        ^
-main.c(56): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+main.c(55): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 TCB_t* pxNextTCB = NULL;
 ^
 main.c(58): warning: no previous extern declaration for non-static variable 'currentSP' [-Wmissing-variable-declarations]
@@ -452,120 +507,121 @@ void thread2() {
 main.c(121): warning: function 'thread2' could be declared with attribute 'noreturn' [-Wmissing-noreturn]
 void thread2() {
                ^
-main.c(130): warning: no previous prototype for function 'OS_WaitNaive' [-Wmissing-prototypes]
-void OS_WaitNaive(semaphore_t* s) {
+main.c(129): warning: no previous prototype for function 'thread3' [-Wmissing-prototypes]
+void thread3() {
      ^
-main.c(130): note: declare 'static' if the function is not intended to be used outside of this translation unit
-void OS_WaitNaive(semaphore_t* s) {
+main.c(129): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void thread3() {
 ^
 static 
-main.c(141): warning: no previous prototype for function 'OS_SignalNaive' [-Wmissing-prototypes]
-void OS_SignalNaive(semaphore_t* s) {
-     ^
-main.c(141): note: declare 'static' if the function is not intended to be used outside of this translation unit
-void OS_SignalNaive(semaphore_t* s) {
-^
-static 
-main.c(150): warning: no previous extern declaration for non-static variable 'GLOBAL_SEMAPHORE' [-Wmissing-variable-declarations]
-semaphore_t GLOBAL_SEMAPHORE = 1;
+main.c(129): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
+void thread3() {
             ^
-main.c(150): note: declare 'static' if the variable is not intended to be used outside of this translation unit
-semaphore_t GLOBAL_SEMAPHORE = 1;
-^
-main.c(151): warning: no previous prototype for function 'SEMAPHORES_Thread1' [-Wmissing-prototypes]
-void SEMAPHORES_Thread1(void){
+main.c(129): warning: function 'thread3' could be declared with attribute 'noreturn' [-Wmissing-noreturn]
+void thread3() {
+               ^
+main.c(137): warning: no previous prototype for function 'thread4' [-Wmissing-prototypes]
+void thread4() {
      ^
-main.c(151): note: declare 'static' if the function is not intended to be used outside of this translation unit
-void SEMAPHORES_Thread1(void){
+main.c(137): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void thread4() {
 ^
 static 
-main.c(151): warning: function 'SEMAPHORES_Thread1' could be declared with attribute 'noreturn' [-Wmissing-noreturn]
-void SEMAPHORES_Thread1(void){
-                             ^
-main.c(170): warning: no previous prototype for function 'SEMAPHORES_Thread2' [-Wmissing-prototypes]
-void SEMAPHORES_Thread2(void){
+main.c(137): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
+void thread4() {
+            ^
+main.c(137): warning: function 'thread4' could be declared with attribute 'noreturn' [-Wmissing-noreturn]
+void thread4() {
+               ^
+main.c(145): warning: no previous prototype for function 'initReadyLists' [-Wmissing-prototypes]
+void initReadyLists() {
      ^
-main.c(170): note: declare 'static' if the function is not intended to be used outside of this translation unit
-void SEMAPHORES_Thread2(void){
+main.c(145): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void initReadyLists() {
 ^
 static 
-main.c(170): warning: function 'SEMAPHORES_Thread2' could be declared with attribute 'noreturn' [-Wmissing-noreturn]
-void SEMAPHORES_Thread2(void){
-                             ^
-main.c(199): warning: implicit conversion changes signedness: 'uint32_t' (aka 'unsigned int') to 'int' [-Wsign-conversion]
+main.c(145): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
+void initReadyLists() {
+                   ^
+main.c(158): warning: implicit conversion changes signedness: 'uint32_t' (aka 'unsigned int') to 'int' [-Wsign-conversion]
         void* stack = MALLOC(stack_size);
                       ~~~~~~~^~~~~~~~~~~
 ./staticMalloc.h(4): note: expanded from macro 'MALLOC'
 #define MALLOC(size) Malloc(size)
                      ~~~~~~ ^~~~
-main.c(204): warning: incompatible pointer types assigning to 'uint32_t *' (aka 'unsigned int *') from 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
+main.c(163): warning: incompatible pointer types assigning to 'uint32_t *' (aka 'unsigned int *') from 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
         newTCB->pxStack = &((uint8_t*)stack)[stack_size];
                         ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-main.c(214): warning: incompatible pointer types assigning to 'uint32_t *' (aka 'unsigned int *') from 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
+main.c(177): warning: incompatible pointer types assigning to 'uint32_t *' (aka 'unsigned int *') from 'uint8_t *' (aka 'unsigned char *') [-Wincompatible-pointer-types]
         newTCB->pxStack = temp;
                         ^ ~~~~
-main.c(196): warning: no previous prototype for function 'OS_spawnThread' [-Wmissing-prototypes]
+main.c(155): warning: no previous prototype for function 'OS_spawnThread' [-Wmissing-prototypes]
 void OS_spawnThread(void (*program)(void), uint32_t tid, 
      ^
-main.c(196): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(155): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_spawnThread(void (*program)(void), uint32_t tid, 
 ^
 static 
-main.c(260): warning: no previous prototype for function 'OS_startScheduler' [-Wmissing-prototypes]
+main.c(223): warning: no previous prototype for function 'OS_startScheduler' [-Wmissing-prototypes]
 void OS_startScheduler(void) {
      ^
-main.c(260): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(223): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_startScheduler(void) {
 ^
 static 
-main.c(280): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+main.c(244): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
         DISABLE_INTERRUPTS();
                             ^
-main.c(303): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
+main.c(266): warning: no previous prototype for function 'SysTick_Handler' [-Wmissing-prototypes]
 void OS_SystickHandler(void) {
      ^
 main.c(11): note: expanded from macro 'OS_SystickHandler'
 #define OS_SystickHandler SysTick_Handler
                           ^
-main.c(303): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(266): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_SystickHandler(void) {
 ^
 static 
-main.c(308): warning: no previous prototype for function 'OS_switchToNextTask' [-Wmissing-prototypes]
+main.c(279): warning: no previous prototype for function 'OS_switchToNextTask' [-Wmissing-prototypes]
 void OS_switchToNextTask(void) {
      ^
-main.c(308): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(279): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_switchToNextTask(void) {
 ^
 static 
-main.c(315): warning: no previous prototype for function 'PendSV_Handler' [-Wmissing-prototypes]
+main.c(304): warning: no previous prototype for function 'PendSV_Handler' [-Wmissing-prototypes]
 void OS_PendSVHandler(void) {
      ^
 main.c(12): note: expanded from macro 'OS_PendSVHandler'
 #define OS_PendSVHandler PendSV_Handler
                          ^
-main.c(315): note: declare 'static' if the function is not intended to be used outside of this translation unit
+main.c(304): note: declare 'static' if the function is not intended to be used outside of this translation unit
 void OS_PendSVHandler(void) {
 ^
 static 
-main.c(51): warning: no previous extern declaration for non-static variable 'sparemem' [-Wmissing-variable-declarations]
+main.c(50): warning: no previous extern declaration for non-static variable 'sparemem' [-Wmissing-variable-declarations]
 char sparemem[1024];
      ^
-main.c(51): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+main.c(50): note: declare 'static' if the variable is not intended to be used outside of this translation unit
 char sparemem[1024];
 ^
-main.c(317): warning: register list not in ascending order [-Winline-asm]
+main.c(56): warning: no previous extern declaration for non-static variable 'readyLists' [-Wmissing-variable-declarations]
+list_t readyLists[NUM_PRIORITIES];
+       ^
+main.c(56): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+list_t readyLists[NUM_PRIORITIES];
+^
+main.c(306): warning: register list not in ascending order [-Winline-asm]
         __asm("POP {LR, R7}             \n");
               ^
 <inline asm>(1): note: instantiated into assembly here
         POP {LR, R7}            
                  ^
-49 warnings generated.
+51 warnings generated.
 compiling main.c...
-assembling startup_TM4C123.s...
 linking...
-Program Size: Code=2736 RO-data=752 RW-data=4 ZI-data=1672  
-".\Objects\ctxtswitch.axf" - 0 Error(s), 118 Warning(s).
+Program Size: Code=2754 RO-data=682 RW-data=0 ZI-data=1680  
+".\Objects\ctxtswitch.axf" - 0 Error(s), 129 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -591,10 +647,10 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.5.0
 
    * Component: Keil::Device:Startup:1.0.1
-      Source file:   Device\Source\ARM\startup_TM4C123.s
       Include file:  Device\Include\TM4C123\TM4C123.h
       Source file:   Device\Source\system_TM4C123.c
-Build Time Elapsed:  00:00:06
+      Source file:   Device\Source\ARM\startup_TM4C123.s
+Build Time Elapsed:  00:00:04
 </pre>
 </body>
 </html>

@@ -408,6 +408,11 @@
               <FileType>1</FileType>
               <FilePath>.\scheduler.c</FilePath>
             </File>
+            <File>
+              <FileName>lists.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\lists.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

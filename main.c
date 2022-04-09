@@ -18,6 +18,7 @@
 // (0xFFFFFFBC)
 // or d? or 9
 #define MAX_SYSCALL_INTERRUPT_PRIORITY (1)
+#define NUM_PRIORITIES 4
 
 #define DISABLE_INTERRUPTS()     \
 {								 \
@@ -28,8 +29,6 @@
 
 #define ENABLE_INTERRUPTS()			__set_BASEPRI(0)
 #define WORD_SIZE (4)
-
-typedef volatile unsigned int semaphore_t;
 
 /* We adapt the freeRTOS naming convention:
  * Prefixes are as follows:
@@ -54,6 +53,7 @@ TCB_t* tmpThread1 = NULL;
 TCB_t* tmpThread2 = NULL;
 TCB_t* pxCurrentTCB = NULL;
 TCB_t* pxNextTCB = NULL;
+list_t readyLists[NUM_PRIORITIES];
 
 uint32_t currentSP = 0;
 uint32_t nextSP = 0;
@@ -126,68 +126,27 @@ void thread2() {
 	}
 }
 
-
-void OS_WaitNaive(semaphore_t* s) {
-	__asm("CPSID I");
-	while ((*s) == 0) {
-		__asm("CPSIE I");
-		__asm("NOP");
-		__asm("CPSID I");
+void thread3() {
+	while (1) {
+		ENABLE_INTERRUPTS();
+		GPIO_PORTB_DATA_R = 0x4;
+		GPIO_PORTB_DATA_R &= (~0x4UL);
 	}
-	(*s)--;
-	__asm("CPSIE I");
 }
 
-void OS_SignalNaive(semaphore_t* s) {
-	__asm("CPSID I");
-	(*s)++;
-	__asm("CPSIE I");
-}
-
-
-
-
-semaphore_t GLOBAL_SEMAPHORE = 1;
-void SEMAPHORES_Thread1(void){
-  while(1){
-    OS_WaitNaive(&GLOBAL_SEMAPHORE); 
-    // exclusive access to object
-	  
-	for (int i = 0;i < 100; i++) {
-		GPIO_PORTB_DATA_R = 0x1;
-		for (int j = 0; j < 3; j++) {
-			SerialWrite("Thread1 Stalling\n");
-		}	
-		GPIO_PORTB_DATA_R &= (~0x1UL);
-	}			  
-    OS_SignalNaive(&GLOBAL_SEMAPHORE);
-	for (int i = 0; i < 5; i++) {
-		SerialWrite("Thread1 Stalling\n");
-	}		
-    // other processing
-  }
-}
-void SEMAPHORES_Thread2(void){
-  while(1){
-    OS_WaitNaive(&GLOBAL_SEMAPHORE); 
-    // exclusive access to object
-    
-	for (int i = 0;i < 100; i++) {
-		GPIO_PORTB_DATA_R = 0x2;
-		for (int j = 0; j < 3; j++) {
-			SerialWrite("Thread2 Stalling\n");
-		}
-		GPIO_PORTB_DATA_R &= (~0x2UL);
-	}		
-	  
-	OS_SignalNaive(&GLOBAL_SEMAPHORE);
-    // other processing
-	for (int i = 0; i < 2000; i++) {
-		SerialWrite("Thread 2 Stalling\n");
+void thread4() {
+	while (1) {
+		ENABLE_INTERRUPTS();
+		GPIO_PORTB_DATA_R = 0x8;
+		GPIO_PORTB_DATA_R &= (~0x8UL);
 	}
-  }
 }
 
+void initReadyLists() {
+    int i;
+    for (i = 0; i < NUM_PRIORITIES; i++)
+        readyLists[i] = NULL;
+}
 
 /*
  * REQUIRES: addresses returned by MALLOC are (at least) 8 byte aligned
@@ -203,10 +162,14 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 	newTCB->pxTopOfStack = stack;
 	newTCB->pxStack = &((uint8_t*)stack)[stack_size];
 						
-	// add it to the circular READY list	
-	if (tmpThread1 == NULL) tmpThread1 = newTCB;
-	else tmpThread2 = newTCB;
-	pxNextTCB = tmpThread1;
+    // add the thread to readyList
+    if (readyLists[priority] == NULL) {
+        readyLists[priority] = create_circular_list((void *)newTCB);
+    }
+    else {
+        add_as_next(readyLists[priority], (void *)newTCB);
+    }
+    pxNextTCB = (pxNextTCB == NULL) ? newTCB : pxNextTCB;
 						
 	// set up the initial state	
 	uint32_t pushed_registers_size = 8*WORD_SIZE;
@@ -275,14 +238,14 @@ int main(void)
 	
 	OS_SetupTimerInterrupt();
 	initMalloc(sparemem);
+    initReadyLists(); //must be init before spawning threads
 	
 	// test OS
 	DISABLE_INTERRUPTS();
-	//OS_spawnThread(&thread1, 0, 200, 1);
-	//OS_spawnThread(&thread2, 1, 200, 1);
-	OS_spawnThread(&SEMAPHORES_Thread1, 0, 200, 1);
-	OS_spawnThread(&SEMAPHORES_Thread2, 1, 200, 1);
-	
+	OS_spawnThread(&thread1, 0, 200, 1);
+	OS_spawnThread(&thread2, 1, 200, 1);
+	OS_spawnThread(&thread3, 1, 200, 1);
+	OS_spawnThread(&thread4, 1, 200, 1);
 	ENABLE_INTERRUPTS();
 	OS_startScheduler();
 	while (1) {}
@@ -301,15 +264,41 @@ int main(void)
  * when all interrupts are done executing
  */
 void OS_SystickHandler(void) {
+	// SerialWrite("Systick timer hit\n");
+	// if (tmpThread1 == NULL || tmpThread2 == NULL) return;
+	// TODO: do we really need to disable interrupts here
+	
+	// DISABLE_INTERRUPTS();
+	
 	// PendSV will only run when all current 
 	NVIC_INT_CTRL_R = NVIC_INT_CTRL_PEND_SV;	// TODO: abstract away the regisiters for this step
+	
+	// ENABLE_INTERRUPTS();
 }
 
 void OS_switchToNextTask(void) {
 	//pxCurrentTask = pxCurrentTask->xListEntry->next;
-	if (tmpThread1 == NULL || tmpThread2 == NULL) return;
+	/*if (tmpThread1 == NULL || tmpThread2 == NULL) return;
 	if (pxCurrentTCB == tmpThread1) pxNextTCB = tmpThread2;
-	else if (pxCurrentTCB == tmpThread2) pxNextTCB = tmpThread1;
+	else if (pxCurrentTCB == tmpThread2) pxNextTCB = tmpThread1;*/
+
+    /* 
+        do any policies like priority upgrades here
+    */
+
+    //round robin scheduler among threads of same priority, 
+    // going through priorities in ascending order
+    int i;
+    bool found = false;
+    for (i = 0; i < NUM_PRIORITIES; i++) {
+        if (readyLists[i] != NULL) {
+            pxNextTCB = (TCB_t *)readyLists[i]->data;
+            readyLists[i] = readyLists[i]->next;
+            found = true;
+            break;
+        }
+    }
+    if (!found) pxNextTCB = pxCurrentTCB; //or perhaps, a default idle thread's TCB
 }
 
 void OS_PendSVHandler(void) {
@@ -332,7 +321,7 @@ void OS_PendSVHandler(void) {
 		//return;
 	}
 	
-	// save software-saved registers context
+	// save software-saved registers
 	__asm("PUSH {R4-R11, R14}");
 	OS_switchToNextTask();
 	
@@ -355,12 +344,9 @@ void OS_PendSVHandler(void) {
 	__asm("LDR R1, =pxCurrentTCB");
 	__asm("STR R0, [R1]");
 	
-	// restore software-saved context
+	//pxCurrentTCB = pxNextTCB;
 	__asm("POP {R4-R11, R14}");
-	
-	// enable interrupts and return
 	__asm("CPSIE I");
 	__asm("bx R14");
 }
-
 
