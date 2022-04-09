@@ -29,6 +29,8 @@
 #define ENABLE_INTERRUPTS()			__set_BASEPRI(0)
 #define WORD_SIZE (4)
 
+typedef volatile unsigned int semaphore_t;
+
 /* We adapt the freeRTOS naming convention:
  * Prefixes are as follows:
  * p: pointer
@@ -124,6 +126,69 @@ void thread2() {
 	}
 }
 
+
+void OS_WaitNaive(semaphore_t* s) {
+	__asm("CPSID I");
+	while ((*s) == 0) {
+		__asm("CPSIE I");
+		__asm("NOP");
+		__asm("CPSID I");
+	}
+	(*s)--;
+	__asm("CPSIE I");
+}
+
+void OS_SignalNaive(semaphore_t* s) {
+	__asm("CPSID I");
+	(*s)++;
+	__asm("CPSIE I");
+}
+
+
+
+
+semaphore_t GLOBAL_SEMAPHORE = 1;
+void SEMAPHORES_Thread1(void){
+  while(1){
+    OS_WaitNaive(&GLOBAL_SEMAPHORE); 
+    // exclusive access to object
+	  
+	for (int i = 0;i < 100; i++) {
+		GPIO_PORTB_DATA_R = 0x1;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread1 Stalling\n");
+		}	
+		GPIO_PORTB_DATA_R &= (~0x1UL);
+	}			  
+    OS_SignalNaive(&GLOBAL_SEMAPHORE);
+	for (int i = 0; i < 5; i++) {
+		SerialWrite("Thread1 Stalling\n");
+	}		
+    // other processing
+  }
+}
+void SEMAPHORES_Thread2(void){
+  while(1){
+    OS_WaitNaive(&GLOBAL_SEMAPHORE); 
+    // exclusive access to object
+    
+	for (int i = 0;i < 100; i++) {
+		GPIO_PORTB_DATA_R = 0x2;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread2 Stalling\n");
+		}
+		GPIO_PORTB_DATA_R &= (~0x2UL);
+	}		
+	  
+	OS_SignalNaive(&GLOBAL_SEMAPHORE);
+    // other processing
+	for (int i = 0; i < 2000; i++) {
+		SerialWrite("Thread 2 Stalling\n");
+	}
+  }
+}
+
+
 /*
  * REQUIRES: addresses returned by MALLOC are (at least) 8 byte aligned
  *
@@ -213,8 +278,11 @@ int main(void)
 	
 	// test OS
 	DISABLE_INTERRUPTS();
-	OS_spawnThread(&thread1, 0, 200, 1);
-	OS_spawnThread(&thread2, 1, 200, 1);
+	//OS_spawnThread(&thread1, 0, 200, 1);
+	//OS_spawnThread(&thread2, 1, 200, 1);
+	OS_spawnThread(&SEMAPHORES_Thread1, 0, 200, 1);
+	OS_spawnThread(&SEMAPHORES_Thread2, 1, 200, 1);
+	
 	ENABLE_INTERRUPTS();
 	OS_startScheduler();
 	while (1) {}
@@ -233,16 +301,8 @@ int main(void)
  * when all interrupts are done executing
  */
 void OS_SystickHandler(void) {
-	// SerialWrite("Systick timer hit\n");
-	// if (tmpThread1 == NULL || tmpThread2 == NULL) return;
-	// TODO: do we really need to disable interrupts here
-	
-	// DISABLE_INTERRUPTS();
-	
 	// PendSV will only run when all current 
 	NVIC_INT_CTRL_R = NVIC_INT_CTRL_PEND_SV;	// TODO: abstract away the regisiters for this step
-	
-	// ENABLE_INTERRUPTS();
 }
 
 void OS_switchToNextTask(void) {
@@ -272,7 +332,7 @@ void OS_PendSVHandler(void) {
 		//return;
 	}
 	
-	// save software-saved registers
+	// save software-saved registers context
 	__asm("PUSH {R4-R11, R14}");
 	OS_switchToNextTask();
 	
@@ -295,8 +355,10 @@ void OS_PendSVHandler(void) {
 	__asm("LDR R1, =pxCurrentTCB");
 	__asm("STR R0, [R1]");
 	
-	//pxCurrentTCB = pxNextTCB;
+	// restore software-saved context
 	__asm("POP {R4-R11, R14}");
+	
+	// enable interrupts and return
 	__asm("CPSIE I");
 	__asm("bx R14");
 }
