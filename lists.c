@@ -110,7 +110,7 @@ list_t delete_node(list_t node) {
     if (node == NULL) return NULL;
     //dummy node in an empty list OR singleton node in circular list
     if (node->next == NULL || node->next == node) {
-        //FREE(node);
+        FREE(node);
         return NULL;
     }
     //default cases
@@ -122,6 +122,6 @@ list_t delete_node(list_t node) {
         node->next->prev = node->prev;
     }
     list_t res = node->next;
-    //FREE(node);
+    FREE(node);
     return res;
 }

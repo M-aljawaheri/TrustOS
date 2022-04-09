@@ -7,6 +7,8 @@
 #include "scheduler.h"
 #include "lists.h"
 #include "staticMalloc.h"
+#include "semaphore.h"
+
 
 #define OS_SystickHandler SysTick_Handler
 #define OS_PendSVHandler PendSV_Handler
@@ -110,37 +112,91 @@ void OS_SetupTimerInterrupt(void) {
     NVIC_ST_CTRL_R = 0x00000007;
 }
 
-void thread1() {
-	while (1) {
-		ENABLE_INTERRUPTS();
+semaphore_t GLOBAL_SEMAPHORE = 1;
+void SEMAPHORES_Thread1(void){
+  while(1){
+    OS_WaitNaive(&GLOBAL_SEMAPHORE); 
+    // exclusive access to object
+
+	for (int i = 0;i < 100; i++) {
 		GPIO_PORTB_DATA_R = 0x1;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread1 Stalling\n");
+		}	
 		GPIO_PORTB_DATA_R &= (~0x1UL);
-	}
+	}			  
+    OS_SignalNaive(&GLOBAL_SEMAPHORE);
+	for (int i = 0; i < 5; i++) {
+		SerialWrite("Thread1 Stalling\n");
+	}		
+    // other processing
+  }
 }
 
-void thread2() {
-	while (1) {
-		ENABLE_INTERRUPTS();
+void SEMAPHORES_Thread2(void){
+  while(1){
+    OS_WaitNaive(&GLOBAL_SEMAPHORE); 
+    // exclusive access to object
+
+	for (int i = 0;i < 100; i++) {
 		GPIO_PORTB_DATA_R = 0x2;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread2 Stalling\n");
+		}
 		GPIO_PORTB_DATA_R &= (~0x2UL);
+	}		
+
+	OS_SignalNaive(&GLOBAL_SEMAPHORE);
+    // other processing
+	for (int i = 0; i < 30; i++) {
+		SerialWrite("Thread 2 Stalling\n");
 	}
+  }
 }
 
-void thread3() {
-	while (1) {
-		ENABLE_INTERRUPTS();
+void SEMAPHORES_Thread3(void){
+  while(1){
+    OS_WaitNaive(&GLOBAL_SEMAPHORE); 
+    // exclusive access to object
+
+	for (int i = 0;i < 100; i++) {
 		GPIO_PORTB_DATA_R = 0x4;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread3 Stalling\n");
+		}
 		GPIO_PORTB_DATA_R &= (~0x4UL);
+	}		
+
+	OS_SignalNaive(&GLOBAL_SEMAPHORE);
+    // other processing
+	for (int i = 0; i < 25; i++) {
+		SerialWrite("Thread 2 Stalling\n");
 	}
+  }
 }
 
-void thread4() {
-	while (1) {
-		ENABLE_INTERRUPTS();
+void SEMAPHORES_Thread4(void){
+  while(1){
+    OS_WaitNaive(&GLOBAL_SEMAPHORE); 
+    // exclusive access to object
+
+	for (int i = 0;i < 100; i++) {
 		GPIO_PORTB_DATA_R = 0x8;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread2 Stalling\n");
+		}
 		GPIO_PORTB_DATA_R &= (~0x8UL);
+	}		
+
+	OS_SignalNaive(&GLOBAL_SEMAPHORE);
+    // other processing
+	for (int i = 0; i < 20; i++) {
+		SerialWrite("Thread 2 Stalling\n");
 	}
+  }
 }
+
+
 
 void initReadyLists() {
     int i;
@@ -237,15 +293,15 @@ int main(void)
     
 	
 	OS_SetupTimerInterrupt();
-	initMalloc(sparemem);
+	initMalloc(sparemem, 20000);
     initReadyLists(); //must be init before spawning threads
 	
 	// test OS
 	DISABLE_INTERRUPTS();
-	OS_spawnThread(&thread1, 0, 200, 1);
-	OS_spawnThread(&thread2, 1, 200, 1);
-	OS_spawnThread(&thread3, 1, 200, 1);
-	OS_spawnThread(&thread4, 1, 200, 1);
+	OS_spawnThread(&SEMAPHORES_Thread1, 0, 200, 1);
+	OS_spawnThread(&SEMAPHORES_Thread2, 1, 200, 1);
+	OS_spawnThread(&SEMAPHORES_Thread3, 1, 200, 1);
+	OS_spawnThread(&SEMAPHORES_Thread4, 1, 200, 1);
 	ENABLE_INTERRUPTS();
 	OS_startScheduler();
 	while (1) {}
