@@ -83,7 +83,7 @@ list_t add_to_back(list_t lst, void *data) {
     node->data = data;
     list_t current_node = lst;
     //special case: adding to an empty list: add in front of dummy node
-    if (!current_node->next) {
+    if (!(current_node->next)) {
         node->next = lst;
         node->prev = NULL;
         current_node->prev = node;

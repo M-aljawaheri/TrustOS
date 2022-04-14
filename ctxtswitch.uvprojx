@@ -423,6 +423,16 @@
               <FileType>5</FileType>
               <FilePath>.\semaphore.h</FilePath>
             </File>
+            <File>
+              <FileName>mutex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\mutex.c</FilePath>
+            </File>
+            <File>
+              <FileName>mutex.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\mutex.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
