@@ -408,6 +408,31 @@
               <FileType>1</FileType>
               <FilePath>.\scheduler.c</FilePath>
             </File>
+            <File>
+              <FileName>lists.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\lists.c</FilePath>
+            </File>
+            <File>
+              <FileName>semaphore.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\semaphore.c</FilePath>
+            </File>
+            <File>
+              <FileName>semaphore.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\semaphore.h</FilePath>
+            </File>
+            <File>
+              <FileName>mutex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\mutex.c</FilePath>
+            </File>
+            <File>
+              <FileName>mutex.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\mutex.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

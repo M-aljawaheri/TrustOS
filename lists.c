@@ -6,19 +6,21 @@
 struct list {
     void *data;
     struct list *next;
+    struct list *prev;
 };
 
 typedef struct list list_node;
 typedef list_node* list_t;
 
 /*
- * all linear lists have a dummy node with NULL data and NULL next at the tail
+ * all linear lists have a dummy node with NULL data and NULL next/prev at the tail
  */
 list_t create_list() {
     list_t res = MALLOC(sizeof(list_node));
     if (!res) return NULL;
     res->data = NULL;
     res->next = NULL;
+    res->prev = NULL;
     return res;
 }
 
@@ -31,6 +33,7 @@ list_t create_circular_list(void *data) {
     if (!res) return NULL;
     res->data = data;
     res->next = res;
+    res->prev = res;
     return res;
 }
 
@@ -43,13 +46,19 @@ list_t add_as_next(list_t lst, void *data) {
     list_t node =  MALLOC(sizeof(list_node));
     if (!node) return NULL;
     node->data = data;
+    //if empty list, add in front of dummy node
     if (!lst->next) {
         node->next = lst;
+        node->prev = NULL;
+        lst->prev = node;
         return node;
     }
+    //else, add after current lst node
     node->next = lst->next;
+    node->prev = lst;
+    node->next->prev = node;
     lst->next = node;
-    return node;
+    return lst;
 }
 
 /*
@@ -59,7 +68,9 @@ list_t add_to_front(list_t lst, void *data) {
     list_t node =  MALLOC(sizeof(list_node));
     if (!node) return NULL;
     node->next = lst;
+    node->prev = NULL;
     node->data = data;
+    lst->prev = node;
     return node;
 }
 
@@ -69,35 +80,48 @@ list_t add_to_front(list_t lst, void *data) {
 list_t add_to_back(list_t lst, void *data) {
     list_t node =  MALLOC(sizeof(list_node));
     if (!node) return NULL;
+    node->data = data;
     list_t current_node = lst;
-    if (!current_node->next) {
-        node->data = data;
+    //special case: adding to an empty list: add in front of dummy node
+    if (!(current_node->next)) {
         node->next = lst;
+        node->prev = NULL;
+        current_node->prev = node;
         return node;
     }
+    //loop invariant: current_node->next is never null
     while (current_node->next->next) {
         current_node = current_node->next;
     }
+    //current node is the node before the dummy node
     node->next = current_node->next;
+    node->prev = current_node;
+    node->next->prev = node;
     current_node->next = node;
-    node->data = data;
     return lst;
 }
 
 /*
- * REQUIRES: list is in the node
- * Returns new list with node removed
- * TODO: add prev pointers to make this efficient
+ * Returns the next node of the deleted node
+ * Returns NULL if your delete caused the entire list to be deleted 
+ * (useful for final clean up of dummy node/singleton circular list)
  */
-list_t delete_node(list_t lst, list_t node) {
-    list_t current_node = lst;
-    if (current_node->next->next == NULL) {
-        return current_node->next;
+list_t delete_node(list_t node) {
+    if (node == NULL) return NULL;
+    //dummy node in an empty list OR singleton node in circular list
+    if (node->next == NULL || node->next == node) {
+        FREE(node);
+        return NULL;
     }
-    while (current_node->next != node) {
-        current_node = current_node->next;
+    //default cases
+    if (node->prev == NULL) {
+        node->next->prev = NULL;
     }
-    current_node->next = node->next;
-    //free next
-    return lst;
+    else {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+    list_t res = node->next;
+    FREE(node);
+    return res;
 }

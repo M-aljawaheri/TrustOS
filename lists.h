@@ -8,6 +8,7 @@
 struct list {
     void *data;
     struct list *next;
+    struct list *prev;
 };
 
 typedef struct list list_node;
@@ -47,10 +48,10 @@ list_t add_to_front(list_t lst, void *data);
 list_t add_to_back(list_t lst, void *data);
 
 /*
- * REQUIRES: list is in the node
- * Returns new list with node removed
- * TODO: add prev pointers to make this efficient
+ * Returns the next node of the deleted node
+ * Returns NULL if your delete caused the entire list to be deleted 
+ * (useful for final clean up of dummy node/singleton circular list)
  */
-list_t delete_node(list_t lst, list_t node);
+list_t delete_node(list_t node);
 
 #endif
