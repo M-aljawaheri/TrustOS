@@ -433,6 +433,16 @@
               <FileType>5</FileType>
               <FilePath>.\mutex.h</FilePath>
             </File>
+            <File>
+              <FileName>scheduler.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\scheduler.h</FilePath>
+            </File>
+            <File>
+              <FileName>configconsts.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\configconsts.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

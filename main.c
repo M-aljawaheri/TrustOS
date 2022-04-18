@@ -9,86 +9,27 @@
 #include "staticMalloc.h"
 #include "semaphore.h"
 #include "mutex.h"
+#include "scheduler.h"
+#include "configconsts.h"
 
-#define OS_SystickHandler SysTick_Handler
-#define OS_PendSVHandler PendSV_Handler
-#define configCPU_CLOCK_HZ (80000000)	// 80 Mhz clock frequency
-#define configTICK_RATE_HZ (1000)       // 1000 hz tick rate
-#define INITIAL_XPSR					( 0x01000000 )
-#define INITIAL_EXC_RETURN				( 0xfffffff9 )
-//(0xFFFFFFB8)
-// (0xFFFFFFBC)
-// or d? or 9
-#define MAX_SYSCALL_INTERRUPT_PRIORITY (1)
-#define NUM_PRIORITIES 4
-
-#define DISABLE_INTERRUPTS()     \
-{								 \
-	__set_BASEPRI( MAX_SYSCALL_INTERRUPT_PRIORITY );   			 \
-	__asm("DSB			\n");	 \
-	__asm("ISB			\n");	 \
-}	
-
-#define ENABLE_INTERRUPTS()			__set_BASEPRI(0)
-#define WORD_SIZE (4)
-
-/* We adapt the freeRTOS naming convention:
- * Prefixes are as follows:
- * p: pointer
- * u: unsigned
- * l: long
- * x: size_t, 32 bit on the cortex m4 architecture we are targetting.
- *
- **/
-
-struct taskControlBlock {
-	uint32_t* pxStack;			// base SP for this thread
-	uint32_t* pxTopOfStack;		// current SP for this thread, TODO: should be volatile?
-	list_t xListEntry;		// link back to the list item this TCB is in. This list item should include what list it's in
-	uint32_t uxPriority;		// current priority of this thread
-	uint32_t uxThreadId;		// ID for this thread
-};
-typedef struct taskControlBlock TCB_t;
 char sparemem[1024];
-
-TCB_t* tmpThread1 = NULL;
-TCB_t* tmpThread2 = NULL;
-TCB_t* pxCurrentTCB = NULL;
-TCB_t* pxNextTCB = NULL;
-list_t readyLists[NUM_PRIORITIES];
+mutex_t globalMutex;
 
 uint32_t currentSP = 0;
 uint32_t nextSP = 0;
 
-bool schedulerStarted = false;
-uint32_t pendcounter = 0;
+extern TCB_t* pxCurrentTCB;
+extern TCB_t* pxNextTCB;
+extern list_t readyLists[NUM_PRIORITIES];
+extern bool schedulerStarted;
 
-mutex_t globalMutex;
 
-void PLLInit()
-{
-    SYSCTL_RCC2_R |= 0x80000000;
-    SYSCTL_RCC2_R |= 0x00000800;
-    SYSCTL_RCC_R = (SYSCTL_RCC_R & ~0x000007C0) + 0x00000540;
-    SYSCTL_RCC2_R &= ~0x00000070;
-    SYSCTL_RCC2_R &= ~0x00002000;
-    SYSCTL_RCC2_R |= 0x40000000;
-    SYSCTL_RCC2_R = (SYSCTL_RCC2_R & ~0x1FC00000) + (4 << 22);
-    while ((SYSCTL_RIS_R &0x00000040)==0){};
-    SYSCTL_RCC2_R &= ~0x00000800;
-}
+/* Important assumptions
+ * 1) Real-time tasks finish in T < 200 ms.
+ **/
 
-void portBSetup() {
-	// port B setup 
-	SYSCTL_RCGCGPIO_R |= 0x02; 	    // enable clock for PORT F
-	GPIO_PORTB_LOCK_R = 0x4C4F434B; // this value unlocks the GPIOCR register.
-	GPIO_PORTB_CR_R = 0xFF;
-	GPIO_PORTB_AMSEL_R = 0x00;      // disable analog functionality
-	GPIO_PORTB_PCTL_R = 0x00000000; // Select GPIO mode in PCTL
-	GPIO_PORTB_DIR_R = 0x0F;        // Port F0 & F4 are input, rest are output
-	GPIO_PORTB_AFSEL_R = 0x00;      // Disable alternate functionality
-	GPIO_PORTB_DEN_R = 0xFF;        // Enable digital ports	
-}
+void PLLInit();
+void portBSetup();
 
 /**
  * This sets the basepri register to have the priority
@@ -115,96 +56,10 @@ void OS_SetupTimerInterrupt(void) {
 }
 
 semaphore_t GLOBAL_SEMAPHORE = 1;
-void SEMAPHORES_Thread1(void){
-  while(1){
-    acquire_mutex(globalMutex, 0, 2); 
-    // exclusive access to object
-
-	for (int i = 0;i < 100; i++) {
-		GPIO_PORTB_DATA_R = 0x1;
-		for (int j = 0; j < 3; j++) {
-			SerialWrite("Thread1 Stalling\n");
-		}	
-		GPIO_PORTB_DATA_R &= (~0x1UL);
-	}			  
-    release_mutex(globalMutex, 0, 2);
-	//for (int i = 0; i < 5; i++) {
-	//	SerialWrite("Thread1 Stalling\n");
-	//}		
-    // other processing
-  }
-}
-
-void SEMAPHORES_Thread2(void){
-  while(1){
-    acquire_mutex(globalMutex, 1, 1);
-    // exclusive access to object
-
-	for (int i = 0;i < 100; i++) {
-		GPIO_PORTB_DATA_R = 0x2;
-		for (int j = 0; j < 3; j++) {
-			SerialWrite("Thread2 Stalling\n");
-		}
-		GPIO_PORTB_DATA_R &= (~0x2UL);
-	}		
-
-    release_mutex(globalMutex, 1, 1);
-    // other processing
-	//for (int i = 0; i < 25; i++) {
-	//	SerialWrite("Thread 2 Stalling\n");
-	//}
-  }
-}
-
-void SEMAPHORES_Thread3(void){
-  while(1){
-    acquire_mutex(globalMutex, 2, 1);
-    // exclusive access to object
-
-	for (int i = 0;i < 100; i++) {
-		GPIO_PORTB_DATA_R = 0x4;
-		for (int j = 0; j < 3; j++) {
-			SerialWrite("Thread3 Stalling\n");
-		}
-		GPIO_PORTB_DATA_R &= (~0x4UL);
-	}		
-
-    release_mutex(globalMutex, 2, 1);
-    // other processing
-	//for (int i = 0; i < 625; i++) {
-	//	SerialWrite("Thread 2 Stalling\n");
-	//}
-  }
-}
-
-void SEMAPHORES_Thread4(void){
-  while(1){
-    acquire_mutex(globalMutex, 3, 1);
-    // exclusive access to object
-
-	for (int i = 0;i < 100; i++) {
-		GPIO_PORTB_DATA_R = 0x8;
-		for (int j = 0; j < 3; j++) {
-			SerialWrite("Thread2 Stalling\n");
-		}
-		GPIO_PORTB_DATA_R &= (~0x8UL);
-	}		
-
-    release_mutex(globalMutex, 3, 1);
-    // other processing
-	//for (int i = 0; i < 3000; i++) {
-	//	SerialWrite("Thread 2 Stalling\n");
-	//}
-  }
-}
-
-
-
-void initReadyLists() {
-    int i;
-    for (i = 0; i < NUM_PRIORITIES; i++)
-        readyLists[i] = NULL;
-}
+void SEMAPHORES_Thread1(void);
+void SEMAPHORES_Thread2(void);
+void SEMAPHORES_Thread3(void);
+void SEMAPHORES_Thread4(void);
 
 /*
  * REQUIRES: addresses returned by MALLOC are (at least) 8 byte aligned
@@ -278,9 +133,81 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 	// for i <= 13: *(--sp) = i;
 }
 
-void OS_startScheduler(void) {
-	schedulerStarted = true;
+/**
+ * Special spawn thread for real time 
+ * tasks. period T must be big enough to allow the system
+ * to work and T_program < T_systickInterrupt
+ */
+void OS_spawnPeriodicThread(void (*program)(void), uint32_t tid, 
+							uint32_t stack_size, int32_t period) {
+	// initializing new TCB
+	void* stack = MALLOC(stack_size);
+	uint32_t priority = 0;
+	TCB_t* newTCB = (TCB_t*)MALLOC(sizeof(TCB_t));
+	newTCB->uxPriority = priority;
+	newTCB->uxThreadId = tid;
+	newTCB->pxTopOfStack = stack;
+	newTCB->pxStack = &((uint8_t*)stack)[stack_size];
+	newTCB->xTaskTime = period;
+	newTCB->xTimeInterval = period;
+    // add the thread to readyList
+    if (readyLists[priority] == NULL) {
+        readyLists[priority] = create_circular_list((void *)newTCB);
+    }
+    else {
+        add_as_next(readyLists[priority], (void *)newTCB);
+    }
+    pxNextTCB = (pxNextTCB == NULL) ? newTCB : pxNextTCB;
+						
+	// set up the initial state	
+	uint32_t pushed_registers_size = 8*WORD_SIZE;
+	uint8_t* temp = ((uint8_t*)(newTCB->pxStack)) - (pushed_registers_size);
+	newTCB->pxStack = temp;
+						
+	// write the pushed registers in reverse order
+	// The numbers are just for debugging, can be optimized out
+	*((uint32_t*)newTCB->pxStack) = 0;		// R0 = 0
+	*((uint32_t*)newTCB->pxStack+1) = 1;	// R1 = 1
+	*((uint32_t*)newTCB->pxStack+2) = 2;	// R2 = 2
+	*((uint32_t*)newTCB->pxStack+3) = 3;	// R3 = 3
+	*((uint32_t*)newTCB->pxStack+4) = 12;	// R12 = 12
+	*((uint32_t*)newTCB->pxStack+5) = INITIAL_EXC_RETURN;	// LR = 0
+	*((uint32_t*)newTCB->pxStack+6) = (uint32_t)program;
+	*((uint32_t*)newTCB->pxStack+7) = INITIAL_XPSR;		
+	// {R4-R11, R14}
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = INITIAL_EXC_RETURN;	// R14
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 11;	// R11
+	//(newTCB->pxStack) -= 7;				// skipping registers R5,R6,R7,R8,R9,R10
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 10;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 9;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 8;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 7;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 6;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 5;
+	
+	(newTCB->pxStack)--;
+	*((uint32_t*)newTCB->pxStack) = 4;	// R4	
+	
+	
+	// NOTE: above could have been replaced by
+	// for i <= 13: *(--sp) = i;
 }
+
 
 /*
  * main.c
@@ -302,7 +229,7 @@ int main(void)
 	
 	// test OS
 	DISABLE_INTERRUPTS();
-	OS_spawnThread(&SEMAPHORES_Thread1, 0, 200, 1);
+	//OS_spawnPeriodicThread(&SEMAPHORES_Thread1, 0, 200, 2000);
 	OS_spawnThread(&SEMAPHORES_Thread2, 1, 200, 1);
 	OS_spawnThread(&SEMAPHORES_Thread3, 2, 200, 1);
 	OS_spawnThread(&SEMAPHORES_Thread4, 3, 200, 1);
@@ -324,8 +251,6 @@ int main(void)
  * when all interrupts are done executing
  */
 void OS_SystickHandler(void) {
-	// SerialWrite("Systick timer hit\n");
-	// if (tmpThread1 == NULL || tmpThread2 == NULL) return;
 	// TODO: do we really need to disable interrupts here
 	
 	// DISABLE_INTERRUPTS();
@@ -336,30 +261,6 @@ void OS_SystickHandler(void) {
 	// ENABLE_INTERRUPTS();
 }
 
-void OS_switchToNextTask(void) {
-	//pxCurrentTask = pxCurrentTask->xListEntry->next;
-	/*if (tmpThread1 == NULL || tmpThread2 == NULL) return;
-	if (pxCurrentTCB == tmpThread1) pxNextTCB = tmpThread2;
-	else if (pxCurrentTCB == tmpThread2) pxNextTCB = tmpThread1;*/
-
-    /* 
-        do any policies like priority upgrades here
-    */
-
-    //round robin scheduler among threads of same priority, 
-    // going through priorities in ascending order
-    int i;
-    bool found = false;
-    for (i = 0; i < NUM_PRIORITIES; i++) {
-        if (readyLists[i] != NULL) {
-            pxNextTCB = (TCB_t *)readyLists[i]->data;
-            readyLists[i] = readyLists[i]->next;
-            found = true;
-            break;
-        }
-    }
-    if (!found) pxNextTCB = pxCurrentTCB; //or perhaps, a default idle thread's TCB
-}
 
 void OS_PendSVHandler(void) {
 	//SerialWrite("Pend SV timer hit\n");
@@ -378,7 +279,6 @@ void OS_PendSVHandler(void) {
 		__asm volatile("ISB					\n");
 		__asm volatile("CPSIE I				\n");
 		__asm volatile("bx R14				\n");
-		//return;
 	}
 	
 	// save software-saved registers
@@ -404,9 +304,120 @@ void OS_PendSVHandler(void) {
 	__asm("LDR R1, =pxCurrentTCB");
 	__asm("STR R0, [R1]");
 	
-	//pxCurrentTCB = pxNextTCB;
+	// restore context and jump to current PC
 	__asm("POP {R4-R11, R14}");
 	__asm("CPSIE I");
 	__asm("bx R14");
 }
 
+
+void PLLInit()
+{
+    SYSCTL_RCC2_R |= 0x80000000;
+    SYSCTL_RCC2_R |= 0x00000800;
+    SYSCTL_RCC_R = (SYSCTL_RCC_R & ~0x000007C0) + 0x00000540;
+    SYSCTL_RCC2_R &= ~0x00000070;
+    SYSCTL_RCC2_R &= ~0x00002000;
+    SYSCTL_RCC2_R |= 0x40000000;
+    SYSCTL_RCC2_R = (SYSCTL_RCC2_R & ~0x1FC00000) + (4 << 22);
+    while ((SYSCTL_RIS_R &0x00000040)==0){};
+    SYSCTL_RCC2_R &= ~0x00000800;
+}
+
+void portBSetup() {
+	// port B setup 
+	SYSCTL_RCGCGPIO_R |= 0x02; 	    // enable clock for PORT F
+	GPIO_PORTB_LOCK_R = 0x4C4F434B; // this value unlocks the GPIOCR register.
+	GPIO_PORTB_CR_R = 0xFF;
+	GPIO_PORTB_AMSEL_R = 0x00;      // disable analog functionality
+	GPIO_PORTB_PCTL_R = 0x00000000; // Select GPIO mode in PCTL
+	GPIO_PORTB_DIR_R = 0x0F;        // Port F0 & F4 are input, rest are output
+	GPIO_PORTB_AFSEL_R = 0x00;      // Disable alternate functionality
+	GPIO_PORTB_DEN_R = 0xFF;        // Enable digital ports	
+}
+
+
+/* Test functions */
+
+void SEMAPHORES_Thread1(void){
+  while(1){
+    acquire_mutex(globalMutex, 0, 2); 
+    // exclusive access to object
+
+	for (int i = 0;i < 100; i++) {
+		GPIO_PORTB_DATA_R = 0x1;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread1 Stalling\n");
+		}	
+		GPIO_PORTB_DATA_R &= (~0x1UL);
+	}			  
+    release_mutex(globalMutex, 0, 2);
+	//for (int i = 0; i < 5; i++) {
+	//	SerialWrite("Thread1 Stalling\n");
+	//}		
+    // other processing
+  }
+}
+
+void SEMAPHORES_Thread2(void){
+  while(1){
+    acquire_mutex(globalMutex, 1, 1);
+    // exclusive access to object
+
+	for (int i = 0;i < 100; i++) {
+		GPIO_PORTB_DATA_R = 0x2;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread2 Stalling\n");
+		}
+		GPIO_PORTB_DATA_R &= (~0x2UL);
+	}		
+
+    release_mutex(globalMutex, 1, 1);
+    // other processing
+	//for (int i = 0; i < 25; i++) {
+	//	SerialWrite("Thread 2 Stalling\n");
+	//}
+  }
+}
+
+void SEMAPHORES_Thread3(void){
+  while(1){
+    acquire_mutex(globalMutex, 2, 1);
+    // exclusive access to object
+
+	for (int i = 0;i < 100; i++) {
+		GPIO_PORTB_DATA_R = 0x4;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread3 Stalling\n");
+		}
+		GPIO_PORTB_DATA_R &= (~0x4UL);
+	}		
+
+    release_mutex(globalMutex, 2, 1);
+    // other processing
+	//for (int i = 0; i < 625; i++) {
+	//	SerialWrite("Thread 2 Stalling\n");
+	//}
+  }
+}
+
+void SEMAPHORES_Thread4(void) {
+  while(1){
+    acquire_mutex(globalMutex, 3, 1);
+    // exclusive access to object
+
+	for (int i = 0;i < 100; i++) {
+		GPIO_PORTB_DATA_R = 0x8;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread2 Stalling\n");
+		}
+		GPIO_PORTB_DATA_R &= (~0x8UL);
+	}		
+
+    release_mutex(globalMutex, 3, 1);
+    // other processing
+	//for (int i = 0; i < 3000; i++) {
+	//	SerialWrite("Thread 2 Stalling\n");
+	//}
+  }
+}

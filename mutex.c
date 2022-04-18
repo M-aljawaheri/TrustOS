@@ -59,7 +59,7 @@ void release_mutex(mutex_t mutex, int id, int priority) {
 }
 
 list_t add_by_priority(list_t lst, void *data) {
-list_t node =  MALLOC(sizeof(list_node));
+	list_t node =  MALLOC(sizeof(list_node));
     if (!node) return NULL;
     node->data = data;
     list_t current_node = lst;

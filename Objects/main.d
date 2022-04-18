@@ -2,4 +2,4 @@
   C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdbool.h 15348.h timer.h \
   serial.h C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stddef.h scheduler.h \
   lists.h staticMalloc.h semaphore.h mutex.h \
-  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdlib.h configconsts.h
