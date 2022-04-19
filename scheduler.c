@@ -45,11 +45,11 @@ void OS_switchToNextTask(void) {
     // going through priorities in ascending order
     int i;
     bool found = false;
-    for (i = 0; i < NUM_PRIORITIES; i++) {
+    for (i = 0; i < NUM_PRIORITIES && !found; i++) {
         if (readyLists[i] != NULL) {			
 			if (i == 0) {
 				list_t current_list = readyLists[0];
-				while (current_list->next != readyLists[0]) {
+				do {
 					// task deadline is "close enough" for some definition of close enough
 					if (((TCB_t*)current_list->data)->xTaskTime <= DELTA_REALTIME) {
 						pxNextTCB = (TCB_t*)readyLists[i]->data;
@@ -57,7 +57,8 @@ void OS_switchToNextTask(void) {
 						found = true;
 						break;
 					}
-				}
+				} while (current_list->next != readyLists[0]);
+				
 			} else {
 				pxNextTCB = (TCB_t *)readyLists[i]->data;
 				readyLists[i] = readyLists[i]->next;

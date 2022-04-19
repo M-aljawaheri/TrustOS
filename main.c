@@ -60,6 +60,7 @@ void SEMAPHORES_Thread1(void);
 void SEMAPHORES_Thread2(void);
 void SEMAPHORES_Thread3(void);
 void SEMAPHORES_Thread4(void);
+void SEMAPHORES_REALTIME(void);
 
 /*
  * REQUIRES: addresses returned by MALLOC are (at least) 8 byte aligned
@@ -67,6 +68,7 @@ void SEMAPHORES_Thread4(void);
  */
 void OS_spawnThread(void (*program)(void), uint32_t tid, 
 					uint32_t stack_size, uint32_t priority) {
+	__asm("CPSID I");
 	// initializing new TCB
 	void* stack = MALLOC(stack_size);
 	TCB_t* newTCB = (TCB_t*)MALLOC(sizeof(TCB_t));
@@ -128,7 +130,7 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
 	(newTCB->pxStack)--;
 	*((uint32_t*)newTCB->pxStack) = 4;	// R4	
 	
-	
+	__asm("CPSIE I");
 	// NOTE: above could have been replaced by
 	// for i <= 13: *(--sp) = i;
 }
@@ -137,9 +139,12 @@ void OS_spawnThread(void (*program)(void), uint32_t tid,
  * Special spawn thread for real time 
  * tasks. period T must be big enough to allow the system
  * to work and T_program < T_systickInterrupt
+ * returns: thread that was spawned
  */
-void OS_spawnPeriodicThread(void (*program)(void), uint32_t tid, 
+TCB_t* OS_spawnPeriodicThread(void (*program)(void), uint32_t tid, 
 							uint32_t stack_size, int32_t period) {
+	
+	__asm("CPSID I");	// disable interrupts
 	// initializing new TCB
 	void* stack = MALLOC(stack_size);
 	uint32_t priority = 0;
@@ -150,7 +155,8 @@ void OS_spawnPeriodicThread(void (*program)(void), uint32_t tid,
 	newTCB->pxStack = &((uint8_t*)stack)[stack_size];
 	newTCB->xTaskTime = period;
 	newTCB->xTimeInterval = period;
-    // add the thread to readyList
+						
+	    // add the thread to readyList
     if (readyLists[priority] == NULL) {
         readyLists[priority] = create_circular_list((void *)newTCB);
     }
@@ -203,9 +209,8 @@ void OS_spawnPeriodicThread(void (*program)(void), uint32_t tid,
 	(newTCB->pxStack)--;
 	*((uint32_t*)newTCB->pxStack) = 4;	// R4	
 	
-	
-	// NOTE: above could have been replaced by
-	// for i <= 13: *(--sp) = i;
+	__asm("CPSIE I");	// enable interrupts
+	return newTCB;
 }
 
 
@@ -229,7 +234,7 @@ int main(void)
 	
 	// test OS
 	DISABLE_INTERRUPTS();
-	//OS_spawnPeriodicThread(&SEMAPHORES_Thread1, 0, 200, 2000);
+	OS_spawnPeriodicThread(&SEMAPHORES_REALTIME, 0, 200, 2000);
 	OS_spawnThread(&SEMAPHORES_Thread2, 1, 200, 1);
 	OS_spawnThread(&SEMAPHORES_Thread3, 2, 200, 1);
 	OS_spawnThread(&SEMAPHORES_Thread4, 3, 200, 1);
@@ -356,6 +361,20 @@ void SEMAPHORES_Thread1(void){
 	//	SerialWrite("Thread1 Stalling\n");
 	//}		
     // other processing
+  }
+}
+
+void SEMAPHORES_REALTIME(void) {
+	  while(1){
+    // exclusive access to object
+
+	for (int i = 0;i < 100; i++) {
+		GPIO_PORTB_DATA_R = 0x1;
+		for (int j = 0; j < 3; j++) {
+			SerialWrite("Thread1 Stalling\n");
+		}	
+		GPIO_PORTB_DATA_R &= (~0x1UL);
+	}			  
   }
 }
 

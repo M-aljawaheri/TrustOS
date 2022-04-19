@@ -23,7 +23,8 @@
 #define ENABLE_INTERRUPTS()			__set_BASEPRI(0)
 #define WORD_SIZE (4)
 
-# define SWAP_TIME (209715187)
+# define SWAP_TIME (210) // (209715187)
+#define SWAP_TIME_MS (210)
 #define DELTA_REALTIME (10)		// 10 ms
 
 #endif
